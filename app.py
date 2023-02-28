@@ -30,7 +30,9 @@ if budget_input:
         recommended_gpu = recommended_gpus_under_budget.iloc[0]
         recommended_gpu_1_lower = recommended_gpus_under_budget.iloc[1]
         st.write(recommended_gpu)
-        
+        st.write(type(recommended_gpu))
+
+
         tier_score_col = recommended_gpu['net_tier_score']
         tier_score_col_1_lower = recommended_gpu_1_lower['net_tier_score']
 
@@ -41,6 +43,8 @@ if budget_input:
             price_diff_1_lower = recommended_gpu['gpu_price'] - recommended_gpu_1_lower['gpu_price']
             st.write(f"Save {price_diff_1_lower} by buying:")
             st.write(recommended_gpu_1_lower)
+
+
 
             tier_diff_1_lower = tier_score_col_1_lower - tier_score_col
             tier_pct_diff_1_lower = abs(tier_diff_1_lower / tier_score_col * 100)
@@ -53,7 +57,10 @@ if budget_input:
         
 
         # for better value-for-money GPU within 15% above budget and 10% above the 15% higher mark
-        # dataframe for the above GPU's
         budget_input_1_higher = 15/100 * budget_input # 10% above budget [1 price step above budget]
-        budget_input_2_higher = 10/100 * budget_input_1_higher
-        budget_query_higher = "SELECT * FROM lowest_price_tiered WHERE"
+        budget_input_2_higher = 10/100 * budget_input_1_higher # 15% above the 10% higher budget [2 price step above budget]
+        budget_query_higher = f"SELECT * FROM lowest_prices_tiered WHERE gpu_price <= {budget_input_2_higher} ORDER BY net_tier_score DESC LIMIT 2"
+        # dataframe for the above GPU's
+        recommended_gpus_2_higher = pd.read_sql(sql=budget_query_higher,con=conn)
+        if len(recommended_gpus_2_higher)==0 or recommended_gpus_2_higher.iloc[1]['price_per_net_tier'] < recommended_gpu.iloc[0]['price_per_net_tier']:
+            pass
