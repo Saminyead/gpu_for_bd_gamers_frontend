@@ -11,6 +11,28 @@ def init_connection():
 
 conn = init_connection()
 
+# which tier_score to choose
+is_ray_tracing = st.selectbox(
+    "Are you willing to pay a premium for Ray Tracing?",
+    ["Yes","No"]
+)
+
+if is_ray_tracing=="Yes":
+    which_tier_score = 'net_tier_score'
+else:
+    weighted_recommendation = "Weighted recommendation according to positive and negative special traits along with raw performance"
+    raw_perf_recommendation = "Only on raw performance. Ignore everything else"
+    tier_score_selection = st.selectbox(
+        label="Which kind of recommendation do you want?",
+        options=[weighted_recommendation,raw_perf_recommendation]
+    )
+    if tier_score_selection==weighted_recommendation:
+        which_tier_score = 'non_rt_tier_score'
+    else:
+        which_tier_score = 'base_tier_score'
+
+# function for button
+st.button("bruh")
 
 # user input their budget
 budget_input = st.number_input(
