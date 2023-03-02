@@ -32,10 +32,32 @@ if budget_input:
         st.write(recommended_gpu)
         st.write(type(recommended_gpu))
 
+        def tier_price_diff(current_gpu,other_gpu):
+            current_gpu_tier_score = current_gpu['net_tier_score']
+            other_gpu_tier_score = other_gpu['net_tier_score']
+            tier_diff = current_gpu_tier_score - other_gpu_tier_score
+            tier_diff_pct = abs(tier_diff / current_gpu_tier_score * 100)
+            # round to 2 decimal places
+            tier_diff_pct = "{:.2f}".format(tier_diff_pct)
 
-        tier_score_col = recommended_gpu['net_tier_score']
-        tier_score_col_1_lower = recommended_gpu_1_lower['net_tier_score']
+            current_gpu_price = current_gpu['gpu_price']
+            other_gpu_price = other_gpu['gpu_price']
+            price_diff = current_gpu_price - other_gpu_price
+            price_diff_pct = abs(price_diff / current_gpu_price * 100)
+            price_diff_pct = "{:.2f}".format(price_diff_pct)
 
+            st.write(f"tier_diff = {tier_diff}")
+            if tier_diff>0:
+                return st.write(
+                    f"Performs within {tier_diff_pct}% of the {current_gpu['gpu_unit_name']} for {price_diff_pct}% lower price"
+                )
+            
+            else:
+                return st.write(
+                    f"Costs {price_diff} more\nOffers {tier_diff_pct}% better value for {price_diff_pct}% higher price"
+                )
+
+    
         price_per_tier_col = recommended_gpu['price_per_net_tier']
         price_per_tier_col_1_lower = recommended_gpu_1_lower['price_per_net_tier']
         # for better value-for-money GPU for lower price
@@ -44,39 +66,10 @@ if budget_input:
             st.write(f"Save {price_diff_1_lower} by buying:")
             st.write(recommended_gpu_1_lower)
 
-            def tier_price_diff(current_gpu,other_gpu):
-                current_gpu_tier_score = current_gpu['net_tier_score']
-                other_gpu_tier_score = other_gpu['net_tier_score']
-                tier_diff = current_gpu_tier_score - other_gpu_tier_score
-                tier_diff_pct = abs(tier_diff / current_gpu_tier_score * 100)
-                # round to 2 decimal places
-                tier_diff_pct = "{:.2f}".format(tier_diff_pct)
-
-                current_gpu_price = current_gpu['gpu_price']
-                other_gpu_price = other_gpu['gpu_price']
-                price_diff = current_gpu_price - other_gpu_price
-                price_diff_pct = abs(price_diff / current_gpu_price * 100)
-                price_diff_pct = "{:.2f}".format(price_diff_pct)
-
-                if tier_diff<0:
-                    return st.write(
-                        f"Performs within {tier_diff_pct}% of the {current_gpu['gpu_unit_name']} for {price_diff_pct}% lower price"
-                    )
-                
-                else:
-                    return st.write(
-                        f"Costs {price_diff} more\nOffers {tier_diff_pct}% better value for {price_diff_pct} higher price"
-                    )
-
-            tier_diff_1_lower = tier_score_col_1_lower - tier_score_col
-            tier_pct_diff_1_lower = abs(tier_diff_1_lower / tier_score_col * 100)
-            tier_pct_diff_1_lower = "{:.2f}".format(tier_pct_diff_1_lower)
-            price_pct_diff_1_lower = price_diff_1_lower / recommended_gpu['gpu_price'] * 100
-            # to round to 2 decimal places
-            price_pct_diff_1_lower = "{:.2f}".format(price_pct_diff_1_lower)
-            st.write(
-                f"Performs within {tier_pct_diff_1_lower}% of the {recommended_gpu['gpu_unit_name']} for {price_pct_diff_1_lower}% lower price")
-        
+            tier_price_diff(
+                current_gpu=recommended_gpu,
+                other_gpu=recommended_gpu_1_lower
+            )        
 
         # for better value-for-money GPU within 15% above budget and 10% above the 15% higher mark
         budget_input_1_higher = 15/100 * budget_input # 10% above budget [1 price step above budget]
