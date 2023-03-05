@@ -79,6 +79,8 @@ class GPU_diff:
     def __init__(self,current_gpu:pd.DataFrame,other_gpu:pd.DataFrame):
         self.current_gpu = current_gpu
         self.other_gpu = other_gpu
+        self.current_gpu_unit_name = current_gpu.iloc[0]['gpu_unit_name']
+        self.other_gpu_unit_name = other_gpu.iloc[0]['gpu_unit_name']
         self.current_gpu_price = current_gpu.iloc[0]['gpu_price']
         self.other_gpu_price = other_gpu.iloc[0]['gpu_price']
         self.current_gpu_tier_score = current_gpu.iloc[0][which_tier_score]
@@ -107,32 +109,29 @@ class GPU_diff:
 def show_recommedation():
     recommended_gpu_price = get_best_card_price()
     recommended_gpu_df = get_best_cards_all(recommended_gpu_price)
-    recommended_gpu_tier_score = recommended_gpu_df.iloc[0][which_tier_score]
-    recommended_gpu_price_per_tier = recommended_gpu_df.iloc[0][price_per_tier_score]
+
     # in case of budget lower than the price of the GTX 1050 Ti
     if len(recommended_gpu_df)==0:
         st.write("No GPU's to recommend for your budget")
     
     price_1_lower = get_best_card_price(which_recommendation="lower")
     df_1_lower = get_best_cards_all(price=price_1_lower)
-    tier_score_1_lower = df_1_lower.iloc[0][which_tier_score]
-    price_per_tier_1_lower = df_1_lower.iloc[0][price_per_tier_score]
 
+    st.write(recommended_gpu_df)
 
-    # if the price_per_tier for 1_lower is lower and the tier_score is withing 15% of the recommended gpu
-    if price_per_tier_1_lower < recommended_gpu_price_per_tier and tier_score_1_lower >= 85/100 * recommended_gpu_tier_score:
-        tier_diff = recommended_gpu_tier_score - tier_score_1_lower
-        tier_diff_pct = tier_diff / recommended_gpu_tier_score * 100
-        tier_diff_pct = "{:.2f}".format(tier_diff_pct)
+    recommended_1_lower_diff = GPU_diff(current_gpu = recommended_gpu_df, other_gpu= df_1_lower)
 
-        price_diff = recommended_gpu_price - price_1_lower
-        price_diff_pct = abs(price_diff / recommended_gpu_price * 100)
-        price_diff_pct = "{:.2f}".format(price_diff_pct)
+    # for better value GPU for less money
+    if recommended_1_lower_diff.current_gpu_price_per_tier > recommended_1_lower_diff.other_gpu_price_per_tier:
 
-        st.write(st.write(f"Save {price_diff} by buying:"))
-        st.write(
-            f"Performs within {tier_diff_pct}% of the {recommended_gpu_df['gpu_unit_name']} for {price_diff_pct}% lower price"
-        )
+        # if the tier difference is within 15%
+        if recommended_1_lower_diff < 15/100 * recommended_1_lower_diff.current_gpu_tier_score:
+            st.write(
+                f"Save BDT. {recommended_1_lower_diff.price_diff} by buying the {recommended_1_lower_diff.current_gpu_unit_name}"
+            )
+            st.write(recommended_1_lower_diff.current_gpu)
+            recommended_1_lower_diff.recommend()
+
 
 # implementing button
 recommendation_btn = st.button(label="Recommend GPU",on_click=show_recommedation)
