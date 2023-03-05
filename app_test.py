@@ -12,31 +12,27 @@ def init_connection():
 conn = init_connection()
 
 # dropdown for determining which tier score
-def which_tier_score():
-    is_ray_tracing = st.selectbox(
-    "Are you willing to pay a premium for Ray Tracing?",
-    ["Yes","No"]
+is_ray_tracing = st.selectbox(
+"Are you willing to pay a premium for Ray Tracing?",
+["Yes","No"]
+)
+
+if is_ray_tracing=="Yes":
+    tier_score_col = 'net_tier_score'
+    price_per_tier_score = 'price_per_net_tier'
+else:
+    weighted_recommendation = "Weighted recommendation according to positive and negative special traits along with raw performance"
+    raw_perf_recommendation = "Only on raw performance. Ignore everything else"
+    tier_score_selection = st.selectbox(
+        label="Which kind of recommendation do you want?",
+        options=[weighted_recommendation,raw_perf_recommendation]
     )
-
-    if is_ray_tracing=="Yes":
-        tier_score_col = 'net_tier_score'
-        price_per_tier_score = 'price_per_net_tier'
+    if tier_score_selection==weighted_recommendation:
+        tier_score_col = 'non_rt_net_score'
+        price_per_tier_score = 'price_per_non_rt_tier'
     else:
-        weighted_recommendation = "Weighted recommendation according to positive and negative special traits along with raw performance"
-        raw_perf_recommendation = "Only on raw performance. Ignore everything else"
-        tier_score_selection = st.selectbox(
-            label="Which kind of recommendation do you want?",
-            options=[weighted_recommendation,raw_perf_recommendation]
-        )
-        if tier_score_selection==weighted_recommendation:
-            tier_score_col = 'non_rt_net_score'
-            price_per_tier_score = 'price_per_non_rt_tier'
-        else:
-            tier_score_col = 'base_tier_score'
-            price_per_tier_score = 'price_per_base_tier'
-    return (tier_score_col,price_per_tier_score)
+        tier_score_col = 'base_tier_score'
+        price_per_tier_score = 'price_per_base_tier'
 
-which_tier_score()
-
-st.write("Which tier score = ")
-which_tier_score()[0]
+tier_and_price_per_tier = (tier_score_col,price_per_tier_score)
+st.write(tier_and_price_per_tier)
