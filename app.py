@@ -119,22 +119,53 @@ def show_recommedation():
     
     else:
         price_1_lower = get_best_card_price(budget=recommended_gpu_price,which_recommendation="lower")
-        df_1_lower = get_best_cards_all(price=price_1_lower)
+        df_1_lower = get_best_cards_all(price_1_lower)
+
+        price_1_higher = get_best_card_price(
+            budget=recommended_gpu_price,
+            which_recommendation="higher",
+            higher_pct = 15
+            )
+        df_1_higher = get_best_cards_all(price_1_higher)
+
+        price_2_higher = get_best_card_price(
+            budget = price_1_higher, 
+            which_recommendation = "higher",
+            higher_pct = 10
+        )
+        df_2_higher = get_best_cards_all(price_2_higher)
+        
 
         st.write(recommended_gpu_df)
 
         recommended_1_lower_diff = GPU_diff(current_gpu = recommended_gpu_df, other_gpu= df_1_lower)
+        recommended_1_higher_diff = GPU_diff(current_gpu = recommended_gpu_df, other_gpu =df_1_higher )
+        recommended_2_higher_diff = GPU_diff(current_gpu = df_1_higher, other_gpu= df_2_higher)
 
         # for better value GPU for less money
-        if recommended_1_lower_diff.current_gpu_price_per_tier > recommended_1_lower_diff.other_gpu_price_per_tier:
+        if recommended_1_lower_diff.other_gpu_price_per_tier < recommended_1_lower_diff.current_gpu_price_per_tier:
 
             # if the tier difference is within 15%
             if recommended_1_lower_diff.tier_diff < 15/100 * recommended_1_lower_diff.current_gpu_tier_score:
                 st.write(
                     f"Save BDT. {recommended_1_lower_diff.price_diff} by buying the {recommended_1_lower_diff.other_gpu_unit_name}"
                 )
-                st.write(recommended_1_lower_diff.other_gpu)
                 recommended_1_lower_diff.recommend()
+                st.write(recommended_1_lower_diff.other_gpu)
+
+        if recommended_1_higher_diff.other_gpu_price_per_tier < recommended_1_higher_diff.current_gpu_price_per_tier:
+            st.write(
+                f"Get better value by buying the {recommended_1_higher_diff.other_gpu_unit_name}"
+            )
+            recommended_1_higher_diff.recommend()
+            st.write(recommended_1_lower_diff.other_gpu)
+
+        if recommended_2_higher_diff.other_gpu_price_per_tier < recommended_2_higher_diff.current_gpu_price_per_tier:
+            st.write(
+                f"You can also buy {recommended_2_higher_diff.other_gpu_unit_name} for even better value"
+            )
+            recommended_2_higher_diff.recommend()
+            st.write(recommended_2_higher_diff.other_gpu)
 
 if budget_input:
     show_recommedation()
