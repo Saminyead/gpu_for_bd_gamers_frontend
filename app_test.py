@@ -34,5 +34,32 @@ else:
         tier_score_col = 'base_tier_score'
         price_per_tier_score = 'price_per_base_tier'
 
-tier_and_price_per_tier = (tier_score_col,price_per_tier_score)
-st.write(tier_and_price_per_tier)
+# input budget
+budget_input = st.number_input(
+    label = "Enter your budget here",
+    min_value = 0
+)
+
+# recommend a GPU
+def get_best_card_df(budget:int = budget_input):
+    query_price = f"SELECT * FROM lowest_prices_tiered WHERE gpu_price <= {budget} ORDER BY {tier_score_col} DESC LIMIT 1"
+    query_best_card_df = pd.read_sql(sql = query_price, con = conn)
+    return query_best_card_df
+
+# if budget too low
+def too_low_gtx_1050_ti():
+    query_gtx_1050_ti = f"SELECT * FROM lowest_prices_tiered WHERE gpu_unit_name = 'Geforce GTX 1050 Ti'"
+    df_gtx_1050_ti = pd.read_sql(sql=query_gtx_1050_ti,con=conn)
+    price_gtx_1050_ti = df_gtx_1050_ti.gpu_price[0]
+    return st.write(
+        f"No good GPU's to recommend for this budget. Consider increasing your budget to BDT. {price_gtx_1050_ti:,} to get the GTX 1050 Ti"
+        ) # the price is written like this to show thousand separator
+
+
+
+if budget_input:
+    get_best_card_df()
+    if len(get_best_card_df()) == 0:
+        too_low_gtx_1050_ti()
+    else:
+        st.write(f"Buy {get_best_card_df().gpu_unit_name[0]}")
