@@ -63,8 +63,8 @@ def upon_budget_input():
     else:
         st.write(f"Buy {get_best_card_df().gpu_unit_name[0]}")
 
-if budget_input:
-    upon_budget_input()
-
 # testing out button
 st.button(label="Recommend Me",on_click=upon_budget_input)
+
+if budget_input:
+    upon_budget_input()
