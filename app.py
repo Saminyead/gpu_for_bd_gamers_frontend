@@ -127,9 +127,9 @@ def show_recommedation():
         # if the tier difference is within 15%
         if recommended_1_lower_diff.tier_diff < 15/100 * recommended_1_lower_diff.current_gpu_tier_score:
             st.write(
-                f"Save BDT. {recommended_1_lower_diff.price_diff} by buying the {recommended_1_lower_diff.current_gpu_unit_name}"
+                f"Save BDT. {recommended_1_lower_diff.price_diff} by buying the {recommended_1_lower_diff.other_gpu_unit_name}"
             )
-            st.write(recommended_1_lower_diff.current_gpu)
+            st.write(recommended_1_lower_diff.other_gpu)
             recommended_1_lower_diff.recommend()
 
 
