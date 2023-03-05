@@ -119,29 +119,31 @@ def show_recommedation():
     
     else:
         price_1_lower = get_best_card_price(budget=recommended_gpu_price,which_recommendation="lower")
-        df_1_lower = get_best_cards_all(price_1_lower)
+        if price_1_lower>0:
+            df_1_lower = get_best_cards_all(price_1_lower)
+            recommended_1_lower_diff = GPU_diff(current_gpu = recommended_gpu_df, other_gpu= df_1_lower)
 
         price_1_higher = get_best_card_price(
-            budget=recommended_gpu_price,
             which_recommendation="higher",
             higher_pct = 15
-            )
-        df_1_higher = get_best_cards_all(price_1_higher)
+        )
+        if price_1_higher > 0:
+            df_1_higher = get_best_cards_all(price_1_higher)
+            recommended_1_higher_diff = GPU_diff(current_gpu = recommended_gpu_df, other_gpu = df_1_higher)
 
         price_2_higher = get_best_card_price(
             budget = price_1_higher, 
             which_recommendation = "higher",
             higher_pct = 10
         )
-        df_2_higher = get_best_cards_all(price_2_higher)
+        if price_2_higher > 0:
+            df_2_higher = get_best_cards_all(price_2_higher)
+            recommended_2_higher_diff = GPU_diff(current_gpu = df_1_higher, other_gpu= df_2_higher)
         
 
         st.write(recommended_gpu_df)
-
-        recommended_1_lower_diff = GPU_diff(current_gpu = recommended_gpu_df, other_gpu= df_1_lower)
-        recommended_1_higher_diff = GPU_diff(current_gpu = recommended_gpu_df, other_gpu =df_1_higher )
-        recommended_2_higher_diff = GPU_diff(current_gpu = df_1_higher, other_gpu= df_2_higher)
-
+        
+        
         # for better value GPU for less money
         if recommended_1_lower_diff.other_gpu_price_per_tier < recommended_1_lower_diff.current_gpu_price_per_tier:
 
