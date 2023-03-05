@@ -55,11 +55,16 @@ def too_low_gtx_1050_ti():
         f"No good GPU's to recommend for this budget. Consider increasing your budget to BDT. {price_gtx_1050_ti:,} to get the GTX 1050 Ti"
         ) # the price is written like this to show thousand separator
 
-
-
-if budget_input:
+# function to execute upon budget_input
+def upon_budget_input():
     get_best_card_df()
     if len(get_best_card_df()) == 0:
         too_low_gtx_1050_ti()
     else:
         st.write(f"Buy {get_best_card_df().gpu_unit_name[0]}")
+
+if budget_input:
+    upon_budget_input()
+
+# testing out button
+st.button(label="Recommend Me",on_click=upon_budget_input)
