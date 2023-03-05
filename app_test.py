@@ -91,16 +91,17 @@ def upon_budget_input():
         recommended_gpu_df_price = get_best_card_df().gpu_price[0]
         recommended_gpu_df = get_best_cards_all(recommended_gpu_df_price)
         recommended_gpu_tier_score = recommended_gpu_df.iloc[0][tier_score_col]
+        recommended_gpu_price_per_tier = recommended_gpu_df.iloc[0][price_per_tier_score]
         st.write(recommended_gpu_df)
 
-        df_1_lower = get_best_card_df(which_query="lower")
+        df_1_lower = get_best_card_df(budget=recommended_gpu_df_price,which_query="lower")
         price_per_tier_1_lower = df_1_lower.iloc[0][price_per_tier_score]
         tier_score_1_lower = df_1_lower.iloc[0][tier_score_col]
         tier_diff_1_lower = abs(tier_score_1_lower - recommended_gpu_tier_score)
         tier_diff_pct_1_lower = tier_diff_1_lower / recommended_gpu_tier_score * 100
-        tier_diff_pct_1_lower = "{:.2f}".format(tier_diff_pct_1_lower)
+        # tier_diff_pct_1_lower = "{:.2f}".format(tier_diff_pct_1_lower)
 
-        if tier_diff_pct_1_lower < 15 and price_per_tier_1_lower < recommended_gpu_tier_score:
+        if tier_diff_pct_1_lower < 15 and price_per_tier_1_lower < recommended_gpu_price_per_tier:
             df_1_lower_price = df_1_lower.gpu_price[0]
             price_diff_1_lower = recommended_gpu_df_price - df_1_lower_price
             price_diff_1_lower_pct = price_diff_1_lower / recommended_gpu_df_price * 100
