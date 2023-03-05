@@ -98,7 +98,7 @@ class GPU_diff:
 
         if self.tier_diff>0:
             return st.write(
-                f"Performs within {tier_diff_pct}% of the {self.current_gpu} for {price_diff_pct}% lower price"
+                f"Performs within {tier_diff_pct}% of the {self.current_gpu_unit_name} for {price_diff_pct}% lower price"
             )
     
         else:
@@ -132,13 +132,11 @@ def show_recommedation():
             st.write(recommended_1_lower_diff.other_gpu)
             recommended_1_lower_diff.recommend()
 
-
-# implementing button
-recommendation_btn = st.button(label="Recommend GPU",on_click=show_recommedation)
-
 if budget_input:
     show_recommedation()
 
+# implementing button
+recommendation_btn = st.button(label="Recommend GPU",on_click=show_recommedation)
 
 ### commented code starts from here
 # # show recommended GPU's only after entering budget
