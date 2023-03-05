@@ -19,6 +19,7 @@ is_ray_tracing = st.selectbox(
 
 if is_ray_tracing=="Yes":
     which_tier_score = 'net_tier_score'
+    price_per_tier_score = 'price_per_net_tier'
 else:
     weighted_recommendation = "Weighted recommendation according to positive and negative special traits along with raw performance"
     raw_perf_recommendation = "Only on raw performance. Ignore everything else"
@@ -28,8 +29,10 @@ else:
     )
     if tier_score_selection==weighted_recommendation:
         which_tier_score = 'non_rt_net_score'
+        price_per_tier_score = 'price_per_non_rt_tier'
     else:
         which_tier_score = 'base_tier_score'
+        price_per_tier_score = 'price_per_base_tier'
 
 
 # user input their budget
@@ -41,15 +44,26 @@ budget_input = st.number_input(
 
 def get_best_card_price(
     budget:int = budget_input,
-    which_recommendation:str = "current"
+    which_recommendation:str = "current",
+    higher_pct:int = 0
     ):
+    """Gets the price of the top performing card, card that is 1 price tier lower, or 1 price tier higher given the budget
 
-    compare_sign = {
-        "current" : "<=",
-        "1_lower" : "<",
-        "higher" : ">"
+    Args:
+        budget (int, optional): The input budget, or the price of the recommended card. Defaults to budget_input.
+        which_recommendation (str, optional): "current", "lower" or "higher". Defaults to "current".
+        higher_pct (int, optional): _description_. Defaults to 0.
+
+    Returns:
+        _type_: _description_
+    """
+    pct_price_multiplier = (higher_pct + 100) / 100
+    query_price = {
+        "current" : f"SELECT * FROM lowest_prices_tiered WHERE gpu_price <= {budget} ORDER BY {which_tier_score} DESC LIMIT 1",
+        "lower" : f"SELECT * FROM lowest_prices_tiered WHERE gpu_price < {budget} ORDER BY {which_tier_score} DESC LIMIT 1",
+        "higher" : f"SELECT * FROM lowest_prices_tiered WHERE gpu_price > {budget} AND gpu_price <= {pct_price_multiplier * budget} ORDER BY {which_tier_score} ASC LIMIT 1"
     }
-    query_best_card = f"SELECT * FROM lowest_prices_tiered WHERE gpu_price {compare_sign[which_recommendation]} {budget} ORDER BY {which_tier_score} DESC LIMIT 1"
+    query_best_card = query_price[which_recommendation]
     df_best_card = pd.read_sql(sql=query_best_card,con=conn)
     price_best_card = df_best_card.gpu_price[0]
     return price_best_card
@@ -59,20 +73,79 @@ def get_best_cards_all(price:int):
     df_all_best_cards = pd.read_sql(sql=query_all_best_cards,con=conn)
     return df_all_best_cards
 
+class GPU_diff:
+    import pandas as pd
+    import streamlit as st
+    def __init__(self,current_gpu:pd.DataFrame,other_gpu:pd.DataFrame):
+        self.current_gpu = current_gpu
+        self.other_gpu = other_gpu
+        self.current_gpu_price = current_gpu.iloc[0]['gpu_price']
+        self.other_gpu_price = other_gpu.iloc[0]['gpu_price']
+        self.current_gpu_tier_score = current_gpu.iloc[0][which_tier_score]
+        self.other_gpu_tier_score = other_gpu.iloc[0][which_tier_score]
+        self.current_gpu_price_per_tier = current_gpu.iloc[0][price_per_tier_score]
+        self.other_gpu_price_per_tier = other_gpu.iloc[0][price_per_tier_score]
+        self.tier_diff = self.current_gpu_tier_score - self.other_gpu_tier_score
+        self.price_diff = self.current_gpu_price - self.other_gpu_price
+    
+    def recommend(self):
+        tier_diff_pct = abs(self.tier_diff / self.current_gpu_tier_score * 100)
+        tier_diff_pct = "{:.2f}".format(tier_diff_pct)
+        price_diff_pct = abs(self.price_diff / self.current_gpu_price * 100)
+        price_diff_pct = "{:.2f}".format(price_diff_pct)
+
+        if self.tier_diff>0:
+            return st.write(
+                f"Performs within {tier_diff_pct}% of the {self.current_gpu} for {price_diff_pct}% lower price"
+            )
+    
+        else:
+            return st.write(
+                f"For BDT. {self.price_diff} more, offers {tier_diff_pct}% better value for just {price_diff_pct}% higher price"
+            ) 
+
+def show_recommedation():
+    recommended_gpu_price = get_best_card_price()
+    recommended_gpu_df = get_best_cards_all(recommended_gpu_price)
+    recommended_gpu_tier_score = recommended_gpu_df.iloc[0][which_tier_score]
+    recommended_gpu_price_per_tier = recommended_gpu_df.iloc[0][price_per_tier_score]
+    # in case of budget lower than the price of the GTX 1050 Ti
+    if len(recommended_gpu_df)==0:
+        st.write("No GPU's to recommend for your budget")
+    
+    price_1_lower = get_best_card_price(which_recommendation="lower")
+    df_1_lower = get_best_cards_all(price=price_1_lower)
+    tier_score_1_lower = df_1_lower.iloc[0][which_tier_score]
+    price_per_tier_1_lower = df_1_lower.iloc[0][price_per_tier_score]
+
+
+    # if the price_per_tier for 1_lower is lower and the tier_score is withing 15% of the recommended gpu
+    if price_per_tier_1_lower < recommended_gpu_price_per_tier and tier_score_1_lower >= 85/100 * recommended_gpu_tier_score:
+        tier_diff = recommended_gpu_tier_score - tier_score_1_lower
+        tier_diff_pct = tier_diff / recommended_gpu_tier_score * 100
+        tier_diff_pct = "{:.2f}".format(tier_diff_pct)
+
+        price_diff = recommended_gpu_price - price_1_lower
+        price_diff_pct = abs(price_diff / recommended_gpu_price * 100)
+        price_diff_pct = "{:.2f}".format(price_diff_pct)
+
+        st.write(st.write(f"Save {price_diff} by buying:"))
+        st.write(
+            f"Performs within {tier_diff_pct}% of the {recommended_gpu_df['gpu_unit_name']} for {price_diff_pct}% lower price"
+        )
 
 # implementing button
-recommendation_btn = st.button(label="Recommend GPU",on_click=get_best_card_price)
+recommendation_btn = st.button(label="Recommend GPU",on_click=show_recommedation)
 
 if budget_input:
-    get_best_card_price()
+    show_recommedation()
 
 
 ### commented code starts from here
 # # show recommended GPU's only after entering budget
 # if budget_input:
-#     # in case of budget lower than the price of the GTX 1050 Ti
-#     if len(recommended_gpus_under_budget)==0:
-#         st.write("No GPU's for your budget")
+
+    
 #     else:
 #         recommended_gpu = recommended_gpus_under_budget.iloc[0]
 #         recommended_gpu_1_lower = recommended_gpus_under_budget.iloc[1]
