@@ -118,7 +118,7 @@ def show_recommedation():
         st.write("No GPU's to recommend for your budget")
     
     else:
-        price_1_lower = get_best_card_price(which_recommendation="lower")
+        price_1_lower = get_best_card_price(budget=recommended_gpu_price,which_recommendation="lower")
         df_1_lower = get_best_cards_all(price=price_1_lower)
 
         st.write(recommended_gpu_df)
@@ -127,7 +127,7 @@ def show_recommedation():
 
         # for better value GPU for less money
         if recommended_1_lower_diff.current_gpu_price_per_tier > recommended_1_lower_diff.other_gpu_price_per_tier:
-            
+
             # if the tier difference is within 15%
             if recommended_1_lower_diff.tier_diff < 15/100 * recommended_1_lower_diff.current_gpu_tier_score:
                 st.write(
