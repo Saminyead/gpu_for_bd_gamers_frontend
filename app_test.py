@@ -136,7 +136,7 @@ def upon_budget_input():
             if price_per_tier_1_lower < recommended_gpu_price_per_tier and tier_diff_pct_1_lower < 15:
                 df_1_lower_all = get_best_cards_all(price = df_1_lower_price)
                 st.write(
-                    f"Save BDT. {price_diff_1_lower:,} by getting the {df_1_lower_gpu_unit}. Provides within {round(tier_diff_pct_1_lower,2)}% of the value of {recommended_gpu_unit_name} while costing {round(price_diff_1_lower_pct,2)}% lower"
+                    f"Save BDT. {price_diff_1_lower:,} by getting the {df_1_lower_gpu_unit}. Provides within {round(tier_diff_pct_1_lower,2)}% of the value while costing {round(price_diff_1_lower_pct,2)}% lower"
                 )
                 st.write(df_1_lower_all)
         
