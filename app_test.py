@@ -21,8 +21,8 @@ if is_ray_tracing=="Yes":
     tier_score_col = 'net_tier_score'
     price_per_tier_score = 'price_per_net_tier'
 else:
-    weighted_recommendation = "Weighted recommendation according to positive and negative special traits along with raw performance"
-    raw_perf_recommendation = "Only on raw performance. Ignore everything else"
+    weighted_recommendation = "Consider both positive and negative traits of GPU"
+    raw_perf_recommendation = "Consider raw performance only"
     tier_score_selection = st.selectbox(
         label="Which kind of recommendation do you want?",
         options=[weighted_recommendation,raw_perf_recommendation]
