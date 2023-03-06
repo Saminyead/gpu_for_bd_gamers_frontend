@@ -110,7 +110,7 @@ def upon_budget_input():
             price_diff_1_lower_pct = price_diff_1_lower / recommended_gpu_df_price * 100
 
         # finding out GPU 1 price tier higher
-        df_1_higher = get_best_card_df(which_query="higher")
+        df_1_higher = get_best_card_df(budget= budget_input,which_query="higher")
         # expecting something similar to the df_1_lower happening
         if len(df_1_higher) != 0:
             df_1_higher_price = df_1_higher.gpu_price[0]
@@ -121,6 +121,11 @@ def upon_budget_input():
             tier_diff_pct_1_higher = tier_diff_1_higher / recommended_gpu_tier_score * 100
             price_diff_1_higher = abs(recommended_gpu_df_price - df_1_higher_price)
             price_diff_1_higher_pct = price_diff_1_higher / recommended_gpu_df_price * 100
+
+            # we need price difference with the budget, not with the price of recommended GPU
+            price_diff_budget = df_1_higher_price - budget_input
+            price_diff_budget_pct = price_diff_budget / budget_input * 100
+
         
         # for recommending better value GPU 1 price tier below
         if len(df_1_lower) != 0:
@@ -133,10 +138,10 @@ def upon_budget_input():
         
         # for recommending better value GPU 1 price tier higher
         if len(df_1_higher) != 0:
-            if price_per_tier_1_higher < recommended_gpu_price_per_tier and price_diff_1_higher_pct < 15:
+            if price_per_tier_1_higher < recommended_gpu_price_per_tier and price_diff_budget_pct < 15:
                 df_1_higher_all = get_best_cards_all(price = df_1_higher_price)
                 st.write(
-                    f"Get the {df_1_higher_gpu_unit} for BDT. {price_diff_1_higher:,} more. Provides {round(tier_diff_pct_1_higher,2)}% higher value compared to the {recommended_gpu_unit_name} for just {round(price_diff_1_higher_pct,2)}% higher."
+                    f"Get the {df_1_higher_gpu_unit} for BDT. {price_diff_budget:,} more. Provides {round(tier_diff_pct_1_higher,2)}% higher value compared to the {recommended_gpu_unit_name} for just {round(price_diff_1_higher_pct,2)}% higher."
                 )
                 st.write(df_1_higher_all)
 
