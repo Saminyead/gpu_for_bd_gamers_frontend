@@ -140,10 +140,8 @@ def upon_budget_input():
                 )
                 st.write(df_1_higher_all)
 
-
-
 # testing out button
-st.button(label="Recommend Me",on_click=upon_budget_input)
+recommend_btn = st.button(label="Recommend Me")
 
-if budget_input:
+if budget_input or recommend_btn:
     upon_budget_input()
