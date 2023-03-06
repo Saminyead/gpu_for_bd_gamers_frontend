@@ -41,7 +41,7 @@ budget_input = st.number_input(
 )
 
 # recommend a GPU
-def get_best_card_df(budget:int = budget_input, which_query:str = "current"):
+def get_best_card_df(budget:int = budget_input, which_query:str = "current", budget_multiplier_pct:int = 15):
     """Gets which card is recommended, 1 price tier lower, or higher
 
     Args:
@@ -53,13 +53,16 @@ def get_best_card_df(budget:int = budget_input, which_query:str = "current"):
         "lower": for 1 price tier lower
         "higher": for higher price tiers
 
+        budget_multiplier_pct (int, optional): Query will get GPU's whose price is this much percentage higher. Defaults to 15
+
     Returns:
         dataframe: Dataframe containing a single gpu according to our budget and which recommendation (recommendation, lower or higher)
     """
+    budget_multiplier = (budget_multiplier_pct + 100) / 100
     which_query_dict = {
         "current" : f"SELECT * FROM lowest_prices_tiered WHERE gpu_price <= {budget} ORDER BY {tier_score_col} DESC LIMIT 1",
         "lower" : f"SELECT * FROM lowest_prices_tiered WHERE gpu_price < {budget} ORDER BY {tier_score_col} DESC LIMIT 1",
-        "higher" : f"SELECT * FROM lowest_prices_tiered WHERE gpu_price > {budget} ORDER BY gpu_price ASC LIMIT 1",
+        "higher" : f"SELECT * FROM lowest_prices_tiered WHERE gpu_price > {budget} AND gpu_price < {budget_multiplier * budget} ORDER BY {price_per_tier_score} ASC LIMIT 1",
     }
     query_price = which_query_dict[which_query]
     query_best_card_df = pd.read_sql(sql = query_price, con = conn)
@@ -126,6 +129,9 @@ def upon_budget_input():
             price_diff_budget = df_1_higher_price - budget_input
             price_diff_budget_pct = price_diff_budget / budget_input * 100
 
+        ### testing
+        st.write(f"The 1_higher is:{df_1_higher_gpu_unit} whose price is {df_1_higher_price}")
+        st.write(df_1_higher)
         
         # for recommending better value GPU 1 price tier below
         if len(df_1_lower) != 0:
@@ -136,6 +142,9 @@ def upon_budget_input():
                 )
                 st.write(df_1_lower_all)
         
+        ### testing
+        st.write(f"Does 1_higher have low price per tier? {bool(price_per_tier_1_higher < recommended_gpu_price_per_tier)}")
+        st.write(f"The price diff pct with budget is = {price_diff_budget_pct}")
         # for recommending better value GPU 1 price tier higher
         if len(df_1_higher) != 0:
             if price_per_tier_1_higher < recommended_gpu_price_per_tier and price_diff_budget_pct < 15:
@@ -144,6 +153,7 @@ def upon_budget_input():
                     f"Get the {df_1_higher_gpu_unit} for BDT. {price_diff_budget:,} more. Provides {round(tier_diff_pct_1_higher,2)}% higher value compared to the {recommended_gpu_unit_name} for just {round(price_diff_1_higher_pct,2)}% higher."
                 )
                 st.write(df_1_higher_all)
+        
 
 # testing out button
 recommend_btn = st.button(label="Recommend Me")
