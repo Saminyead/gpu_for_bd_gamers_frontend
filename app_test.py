@@ -24,7 +24,7 @@ else:
     weighted_recommendation = "Consider both positive and negative traits of GPU"
     raw_perf_recommendation = "Consider raw performance only"
     tier_score_selection = st.selectbox(
-        label="Which kind of recommendation do you want?",
+        label="How do you want the GPU performances to be calculated?",
         options=[weighted_recommendation,raw_perf_recommendation]
     )
     if tier_score_selection==weighted_recommendation:
