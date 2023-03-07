@@ -78,8 +78,8 @@ def too_low_gtx_1050_ti():
         ) # the price is written like this to show thousand separator
 
 # all recommended gpus
-def get_best_cards_all(price:int):
-    query_all_cards = f"SELECT * FROM lowest_prices_tiered WHERE gpu_price = {price}"
+def get_best_cards_all(gpu_unit:str):
+    query_all_cards = f"SELECT * FROM lowest_prices_tiered WHERE gpu_unit_name = '{gpu_unit}'"
     df_all_cards = pd.read_sql(sql=query_all_cards,con=conn)
     return df_all_cards
 
@@ -94,7 +94,7 @@ def upon_budget_input():
         recommended_gpu_unit_name = get_best_card_df().gpu_unit_name[0]
         st.write(f"Buy {recommended_gpu_unit_name}")
         recommended_gpu_df_price = get_best_card_df().gpu_price[0]
-        recommended_gpu_df = get_best_cards_all(recommended_gpu_df_price)
+        recommended_gpu_df = get_best_cards_all(recommended_gpu_unit_name)
         recommended_gpu_tier_score = recommended_gpu_df.iloc[0][tier_score_col]
         recommended_gpu_price_per_tier = recommended_gpu_df.iloc[0][price_per_tier_score]
         st.write(recommended_gpu_df)
@@ -134,7 +134,7 @@ def upon_budget_input():
         # for recommending better value GPU 1 price tier below
         if len(df_1_lower) != 0:
             if price_per_tier_1_lower < recommended_gpu_price_per_tier and tier_diff_pct_1_lower < 15:
-                df_1_lower_all = get_best_cards_all(price = df_1_lower_price)
+                df_1_lower_all = get_best_cards_all(df_1_lower_gpu_unit)
                 st.write(
                     f"Save BDT {price_diff_1_lower:,} by getting the {df_1_lower_gpu_unit}. Provides within {round(tier_diff_pct_1_lower,2)}% of the value while costing {round(price_diff_1_lower_pct,2)}% lower"
                 )
@@ -144,9 +144,9 @@ def upon_budget_input():
         # for recommending better value GPU 1 price tier higher
         if len(df_1_higher) != 0:
             if price_per_tier_1_higher < recommended_gpu_price_per_tier:
-                df_1_higher_all = get_best_cards_all(price = df_1_higher_price)
+                df_1_higher_all = get_best_cards_all(df_1_higher_gpu_unit)
                 st.write(
-                    f"Get the {df_1_higher_gpu_unit} for BDT {price_diff_budget:,} more. Provides {round(tier_diff_pct_1_higher,2)}% higher value for just {round(price_diff_1_higher_pct,2)}% higher cost."
+                    f"By increasing your budget by {price_diff_budget_pct}% Get the {df_1_higher_gpu_unit} for BDT {price_diff_budget:,} more. Provides {round(tier_diff_pct_1_higher,2)}% higher value for just {round(price_diff_1_higher_pct,2)}% higher cost."
                 )
                 st.write(df_1_higher_all)
         
