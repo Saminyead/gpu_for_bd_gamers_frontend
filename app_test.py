@@ -130,7 +130,12 @@ def upon_budget_input():
         # column design
         col_recommended,col_1_lower,col_1_higher = st.columns(3)
 
-        
+        col_recommended.header("Top performing GPU for your price:")
+        col_recommended.write(recommended_gpu_unit_name)
+        col_recommended.write(f"Price: {recommended_gpu_df_price}")
+        col_recommended.write(f"Tier Score: {recommended_gpu_tier_score}")
+        col_recommended.write(f"Available at:")
+        col_recommended.write(recommended_gpu_df[['gpu_name','retailer_name','retail_url']])
         
         # for recommending better value GPU 1 price tier below
         if len(df_1_lower) != 0:
