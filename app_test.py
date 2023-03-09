@@ -92,12 +92,10 @@ def upon_budget_input():
     else:
         # writing recommended GPU
         recommended_gpu_unit_name = get_best_card_df().gpu_unit_name[0]
-        st.write(f"Buy {recommended_gpu_unit_name}")
         recommended_gpu_df_price = get_best_card_df().gpu_price[0]
         recommended_gpu_df = get_best_cards_all(recommended_gpu_unit_name)
         recommended_gpu_tier_score = recommended_gpu_df.iloc[0][tier_score_col]
         recommended_gpu_price_per_tier = recommended_gpu_df.iloc[0][price_per_tier_score]
-        st.write(recommended_gpu_df)
 
         # finding out GPU 1 price tier lower
         df_1_lower = get_best_card_df(budget=recommended_gpu_df_price,which_query="lower")
@@ -129,7 +127,10 @@ def upon_budget_input():
             price_diff_budget = df_1_higher_price - budget_input
             price_diff_budget_pct = price_diff_budget / budget_input * 100
 
+        # column design
+        col_recommended,col_1_lower,col_1_higher = st.columns(3)
 
+        
         
         # for recommending better value GPU 1 price tier below
         if len(df_1_lower) != 0:
