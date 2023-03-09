@@ -132,8 +132,8 @@ def upon_budget_input():
 
         col_recommended.header("Top performing GPU for your price:")
         col_recommended.write(recommended_gpu_unit_name)
-        col_recommended.write(f"Price: {recommended_gpu_df_price}")
-        col_recommended.write(f"Tier Score: {recommended_gpu_tier_score}")
+        col_recommended.write(f"Price: BDT. {recommended_gpu_df_price:,}")
+        col_recommended.write(f"Tier Score: {round(recommended_gpu_tier_score,2)}")
         col_recommended.write(f"Available at:")
         col_recommended.write(recommended_gpu_df[['gpu_name','retailer_name','retail_url']])
         
