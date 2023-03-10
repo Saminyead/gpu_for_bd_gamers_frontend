@@ -134,8 +134,12 @@ def upon_budget_input():
         col_recommended.write(recommended_gpu_unit_name)
         col_recommended.write(f"Price: BDT. {recommended_gpu_df_price:,}")
         col_recommended.write(f"Tier Score: {round(recommended_gpu_tier_score,2)}")
-        col_recommended.write(f"Available at:")
-        col_recommended.write(recommended_gpu_df[['gpu_name','retailer_name','retail_url']])
+        col_recommended.write(f"Available at: ")
+        for index, row in recommended_gpu_df.iterrows():
+            # nested columns to show retailers and GPU names side by side
+            col_retailer, col_gpu_name = st.columns(2)
+            col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
+            col_gpu_name.write(f"{row.gpu_name}")
         
         # for recommending better value GPU 1 price tier below
         if len(df_1_lower) != 0:
