@@ -127,12 +127,15 @@ def upon_budget_input():
             price_diff_budget = df_1_higher_price - budget_input
             price_diff_budget_pct = price_diff_budget / budget_input * 100
 
+
         # column design
         col_index,col_recommended,col_1_lower,col_1_higher = st.columns(4)
 
         # index column containing all the row headers
-        col_index.header("")
-        col_index.write(f"####  ")
+        col_index.write("""
+           ### This is a header!
+        """)
+        col_index.write(f"####  \u0061")
         col_index.write(f"Price: BDT. ")
         col_index.write(f"Tier Score: ")
         col_index.write(f"Available at: ")
