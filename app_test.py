@@ -128,7 +128,15 @@ def upon_budget_input():
             price_diff_budget_pct = price_diff_budget / budget_input * 100
 
         # column design
-        col_recommended,col_1_lower,col_1_higher = st.columns(3)
+        col_index,col_recommended,col_1_lower,col_1_higher = st.columns(4)
+
+        # index column containing all the row headers
+        col_index.header("")
+        col_index.write(f"####  ")
+        col_index.write(f"Price: BDT. ")
+        col_index.write(f"Tier Score: ")
+        col_index.write(f"Available at: ")
+        
 
         col_recommended.header("Top performing GPU for your price:")
         col_recommended.write(f"##### {recommended_gpu_unit_name}")
