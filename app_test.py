@@ -137,7 +137,7 @@ def upon_budget_input():
         col_recommended.write(f"Available at: ")
         for index, row in recommended_gpu_df.iterrows():
             # nested columns to show retailers and GPU names side by side
-            col_retailer, col_gpu_name = st.columns(2)
+            col_retailer, col_gpu_name = col_recommended.columns(2)
             col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
             col_gpu_name.write(f"{row.gpu_name}")
         
