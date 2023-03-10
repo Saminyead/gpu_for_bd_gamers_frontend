@@ -147,7 +147,7 @@ def upon_budget_input():
                 gpu_df (pd.DataFrame): which dataframe - recommended_df, df_1_lower_all or df_1_higher_all
             """
             col.write(f"### {gpu_df.gpu_unit_name[0]}")
-            col.write(f"{gpu_df.gpu_price[0]:,}")
+            col.write(f"BDT. {gpu_df.gpu_price[0]:,}")
             col.write(round(gpu_df.iloc[0][tier_score_col]))
             for index, row in gpu_df.iterrows():
                 col_retailer, col_gpu_name = col.columns(2)
