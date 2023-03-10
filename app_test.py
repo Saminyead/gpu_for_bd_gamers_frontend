@@ -136,6 +136,23 @@ def upon_budget_input():
         col_index.write(f"Price: BDT. ")
         col_index.write(f"Tier Score: ")
         col_index.write(f"Available at: ")
+
+        # function for showing the columns
+        def recommend_col(col,title:str,gpu_df:pd.DataFrame):
+            """for displaying a st.column of either recommended gpu, 1 price tier lower, or 1 price tier higher
+
+            Args:
+                col (_type_): which column - col_recommended, col_1_lower or col_1_higher
+                title (str): _description_
+                gpu_df (pd.DataFrame): which dataframe - recommended_df, df_1_lower_all or df_1_higher_all
+            """
+            col.write(f"### {gpu_df.gpu_unit_name[0]}")
+            col.write(f"{gpu_df.gpu_price[0]:,}")
+            col.write(round(gpu_df.iloc[0][tier_score_col]))
+            for index, row in gpu_df.iterrows():
+                col_retailer, col_gpu_name = col.columns(2)
+                col_retailer.write(f"[{row.retailer_name}]({row.retail_name})")
+                col_gpu_name.write(f"{row.gpu_name}")
         
 
         col_recommended.header("Top performing GPU for your price:")
