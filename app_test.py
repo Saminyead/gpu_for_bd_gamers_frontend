@@ -156,12 +156,12 @@ def upon_budget_input():
                 price_diff_budget = abs(gpu_df.gpu_price[0] - budget)
                 price_diff_budget_pct = price_diff_budget / budget * 100
                 tier_diff = gpu_df.iloc[0][tier_score_col] - compare_df.iloc[0][tier_score_col]
-                tier_diff_pct = tier_diff / compare_df.iloc[0][tier_score_col] * 100
+                tier_diff_pct = abs(tier_diff / compare_df.iloc[0][tier_score_col] * 100)
 
                 if tier_diff < 0:
                     col.write(
                     f"""
-                    Save BDT. {price_diff:,}
+                    Save BDT. {price_diff:,}   
                     Performs within {round(tier_diff_pct,2)}%, costs {round(price_diff_pct,2)}% lower price"""
                 )
                 
@@ -194,10 +194,12 @@ def upon_budget_input():
         if len(df_1_lower) != 0:
             if price_per_tier_1_lower < recommended_gpu_price_per_tier and tier_diff_pct_1_lower < 10:
                 df_1_lower_all = get_best_cards_all(df_1_lower_gpu_unit)
-                st.write(
-                    f"Save BDT {price_diff_1_lower:,} by getting the {df_1_lower_gpu_unit}. Provides within {round(tier_diff_pct_1_lower,2)}% of the value while costing {round(price_diff_1_lower_pct,2)}% lower"
+                recommend_col(
+                    col = col_1_lower,
+                    title = "1_lower",
+                    gpu_df=df_1_lower_all,
+                    compare_df=recommended_gpu_df
                 )
-                st.write(df_1_lower_all)
         
 
         # for recommending better value GPU 1 price tier higher
