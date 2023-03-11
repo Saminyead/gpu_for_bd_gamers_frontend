@@ -131,25 +131,41 @@ def upon_budget_input():
         # column design
         col_index,col_recommended,col_1_lower,col_1_higher = st.columns(4)
 
-        # index column containing all the row headers
-        col_index.write("""
-           ### This is a header!
-        """)
-        col_index.write(f"####  \u0061")
-        col_index.write(f"Price: BDT. ")
-        col_index.write(f"Tier Score: ")
-        col_index.write(f"Available at: ")
-
         # function for showing the columns
-        def recommend_col(col,title:str,gpu_df:pd.DataFrame):
+        def recommend_col(col,title:str,gpu_df:pd.DataFrame,compare_df:pd.DataFrame = None,budget:int=budget_input):
             """for displaying a st.column of either recommended gpu, 1 price tier lower, or 1 price tier higher
 
             Args:
                 col (_type_): which column - col_recommended, col_1_lower or col_1_higher
-                title (str): _description_
+                title (str): "recommended","1_lower" or "1_higher"
                 gpu_df (pd.DataFrame): which dataframe - recommended_df, df_1_lower_all or df_1_higher_all
             """
+
+            title_list = {
+                "recommended":"Top performing GPU for your budget",
+                "1_lower":"Lower price, close in performance",
+                "1_higher":"Spend a little more for better value-for-money"
+            }
+            col.header(title_list[title])
             col.write(f"### {gpu_df.gpu_unit_name[0]}")
+            if title == title_list["1_lower"]  or title_list["1_higher"]:
+                price_diff = abs(gpu_df.gpu_price[0] - compare_df.gpu_price[0])
+                price_diff_pct = price_diff / compare_df.gpu_price[0] * 100
+                tier_diff = gpu_df.iloc[0][tier_score_col] - compare_df.iloc[0][tier_score_col]
+                tier_diff_pct = tier_diff / compare_df.iloc[0][tier_score_col] * 100
+
+                if tier_diff < 0:
+                    col.write(
+                    f"Performs within {round(tier_diff_pct,2)}%, costs {round(price_diff_pct,2)}% lower price"
+                )
+                
+                else:
+                    col.write(
+                        f"""
+                        For BDT. {price_diff} ({price_diff_pct}%) higher than your budget:  
+                        Provides {round(tier_diff_pct)}% higher performance for just {round(price_diff_pct)}% higher price"""
+                    )
+
             col.write(f"BDT. {gpu_df.gpu_price[0]:,}")
             col.write(round(gpu_df.iloc[0][tier_score_col]))
             for index, row in gpu_df.iterrows():
