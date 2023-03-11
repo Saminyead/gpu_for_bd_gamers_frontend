@@ -2,6 +2,10 @@ import streamlit as st
 import psycopg2
 import pandas as pd
 
+# for wide configuration, looks better this way
+st.set_page_config(layout="wide")
+
+
 # Initialize connection.
 # Uses st.cache_resource to only run once.
 @st.cache_resource
@@ -10,6 +14,8 @@ def init_connection():
     return psycopg2.connect(**st.secrets["postgres"])
 
 conn = init_connection()
+
+
 
 # dropdown for determining which tier score
 is_ray_tracing = st.selectbox(
