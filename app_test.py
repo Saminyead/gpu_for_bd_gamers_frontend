@@ -206,10 +206,12 @@ def upon_budget_input():
         if len(df_1_higher) != 0:
             if price_per_tier_1_higher < recommended_gpu_price_per_tier:
                 df_1_higher_all = get_best_cards_all(df_1_higher_gpu_unit)
-                st.write(
-                    f"By increasing your budget by {round(price_diff_budget_pct,2)}%, get the {df_1_higher_gpu_unit} for BDT {price_diff_budget:,} more. Provides {round(tier_diff_pct_1_higher,2)}% higher value for just {round(price_diff_1_higher_pct,2)}% higher cost."
+                recommend_col(
+                    col = col_1_higher,
+                    title = "1_higher",
+                    gpu_df = df_1_higher_all,
+                    compare_df = recommended_gpu_df
                 )
-                st.write(df_1_higher_all)
         
 
 # testing out button
