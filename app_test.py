@@ -151,23 +151,31 @@ def upon_budget_input():
             if title == title_list["1_lower"]  or title_list["1_higher"]:
                 price_diff = abs(gpu_df.gpu_price[0] - compare_df.gpu_price[0])
                 price_diff_pct = price_diff / compare_df.gpu_price[0] * 100
+                price_diff_budget = abs(gpu_df.gpu_price[0] - budget)
+                price_diff_budget_pct = price_diff_budget / budget * 100
                 tier_diff = gpu_df.iloc[0][tier_score_col] - compare_df.iloc[0][tier_score_col]
                 tier_diff_pct = tier_diff / compare_df.iloc[0][tier_score_col] * 100
 
                 if tier_diff < 0:
                     col.write(
-                    f"Performs within {round(tier_diff_pct,2)}%, costs {round(price_diff_pct,2)}% lower price"
+                    f"""
+                    Save BDT. {price_diff:,}
+                    Performs within {round(tier_diff_pct,2)}%, costs {round(price_diff_pct,2)}% lower price"""
                 )
                 
                 else:
                     col.write(
                         f"""
-                        For BDT. {price_diff} ({price_diff_pct}%) higher than your budget:  
+                        For BDT. {price_diff_budget:,} ({round(price_diff_budget_pct)}%) higher than your budget:   
                         Provides {round(tier_diff_pct)}% higher performance for just {round(price_diff_pct)}% higher price"""
                     )
 
-            col.write(f"BDT. {gpu_df.gpu_price[0]:,}")
-            col.write(round(gpu_df.iloc[0][tier_score_col]))
+            col.write(f"""
+            Price:   
+            BDT. {gpu_df.gpu_price[0]:,}""")
+            col.write(f"""
+            Tier Score:   
+            {round(gpu_df.iloc[0][tier_score_col]),2}""")
             for index, row in gpu_df.iterrows():
                 col_retailer, col_gpu_name = col.columns(2)
                 col_retailer.write(f"[{row.retailer_name}]({row.retail_name})")
