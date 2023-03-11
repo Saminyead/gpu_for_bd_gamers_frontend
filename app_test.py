@@ -139,6 +139,8 @@ def upon_budget_input():
                 col (_type_): which column - col_recommended, col_1_lower or col_1_higher
                 title (str): "recommended","1_lower" or "1_higher"
                 gpu_df (pd.DataFrame): which dataframe - recommended_df, df_1_lower_all or df_1_higher_all
+                compare_df (pd.DataFrame): for 1_lower and 1_higher, the dataframe to compare to (mainly juust recommended). Defailts to None
+                budget (int): the input budget. Defaults to budget_input
             """
 
             title_list = {
