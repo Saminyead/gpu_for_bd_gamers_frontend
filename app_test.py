@@ -129,7 +129,7 @@ def upon_budget_input():
 
 
         # column design
-        col_index,col_recommended,col_1_lower,col_1_higher = st.columns(4)
+        col_recommended,col_1_lower,col_1_higher = st.columns(3)
 
         # function for showing the columns
         def recommend_col(col,title:str,gpu_df:pd.DataFrame,compare_df:pd.DataFrame = None,budget:int=budget_input):
@@ -150,7 +150,7 @@ def upon_budget_input():
             }
             col.header(title_list[title])
             col.write(f"### {gpu_df.gpu_unit_name[0]}")
-            if title == title_list["1_lower"]  or title_list["1_higher"]:
+            if title != "recommended":
                 price_diff = abs(gpu_df.gpu_price[0] - compare_df.gpu_price[0])
                 price_diff_pct = price_diff / compare_df.gpu_price[0] * 100
                 price_diff_budget = abs(gpu_df.gpu_price[0] - budget)
@@ -177,23 +177,18 @@ def upon_budget_input():
             BDT. {gpu_df.gpu_price[0]:,}""")
             col.write(f"""
             Tier Score:   
-            {round(gpu_df.iloc[0][tier_score_col]),2}""")
+            {round((gpu_df.iloc[0][tier_score_col]),2)}""")
             for index, row in gpu_df.iterrows():
                 col_retailer, col_gpu_name = col.columns(2)
-                col_retailer.write(f"[{row.retailer_name}]({row.retail_name})")
+                col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
                 col_gpu_name.write(f"{row.gpu_name}")
         
 
-        col_recommended.header("Top performing GPU for your price:")
-        col_recommended.write(f"##### {recommended_gpu_unit_name}")
-        col_recommended.write(f"Price: BDT. {recommended_gpu_df_price:,}")
-        col_recommended.write(f"Tier Score: {round(recommended_gpu_tier_score,2)}")
-        col_recommended.write(f"Available at: ")
-        for index, row in recommended_gpu_df.iterrows():
-            # nested columns to show retailers and GPU names side by side
-            col_retailer, col_gpu_name = col_recommended.columns(2)
-            col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
-            col_gpu_name.write(f"{row.gpu_name}")
+        recommend_col(
+            col = col_recommended,
+            title = "recommended",
+            gpu_df = recommended_gpu_df
+        )
         
         # for recommending better value GPU 1 price tier below
         if len(df_1_lower) != 0:
