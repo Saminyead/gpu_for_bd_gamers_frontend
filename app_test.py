@@ -107,31 +107,18 @@ def upon_budget_input():
         df_1_lower = get_best_card_df(budget=recommended_gpu_df_price,which_query="lower")
         # for the GTX 1050 Ti, df_1_lower becomes an empty dataframe
         if len(df_1_lower) != 0:
-            df_1_lower_price = df_1_lower.gpu_price[0]
             df_1_lower_gpu_unit = df_1_lower.gpu_unit_name[0]
             price_per_tier_1_lower = df_1_lower.iloc[0][price_per_tier_score]
             tier_score_1_lower = df_1_lower.iloc[0][tier_score_col]
             tier_diff_1_lower = abs(tier_score_1_lower - recommended_gpu_tier_score)
             tier_diff_pct_1_lower = tier_diff_1_lower / recommended_gpu_tier_score * 100
-            price_diff_1_lower = abs(recommended_gpu_df_price - df_1_lower_price)
-            price_diff_1_lower_pct = price_diff_1_lower / recommended_gpu_df_price * 100
 
         # finding out GPU 1 price tier higher
         df_1_higher = get_best_card_df(budget= budget_input,which_query="higher")
         # expecting something similar to the df_1_lower happening
         if len(df_1_higher) != 0:
-            df_1_higher_price = df_1_higher.gpu_price[0]
             df_1_higher_gpu_unit = df_1_higher.gpu_unit_name[0]
             price_per_tier_1_higher = df_1_higher.iloc[0][price_per_tier_score]
-            tier_score_1_higher = df_1_higher.iloc[0][tier_score_col]
-            tier_diff_1_higher = abs(tier_score_1_higher - recommended_gpu_tier_score)
-            tier_diff_pct_1_higher = tier_diff_1_higher / recommended_gpu_tier_score * 100
-            price_diff_1_higher = abs(recommended_gpu_df_price - df_1_higher_price)
-            price_diff_1_higher_pct = price_diff_1_higher / recommended_gpu_df_price * 100
-
-            # we need price difference with the budget, not with the price of recommended GPU
-            price_diff_budget = df_1_higher_price - budget_input
-            price_diff_budget_pct = price_diff_budget / budget_input * 100
 
 
         # column design
