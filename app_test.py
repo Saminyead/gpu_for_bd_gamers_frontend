@@ -135,8 +135,8 @@ def upon_budget_input():
 
             title_list = {
                 "recommended":"Top performing GPU for your budget",
-                "1_lower":"Lower price, close in performance",
-                "1_higher":"Spend a little more for better value-for-money"
+                "1_lower":"Lower Price, Close in Performance",
+                "1_higher":"Higher Price, Much Higher Performance"
             }
             col.header(title_list[title])
             col.write(f"### {gpu_df.gpu_unit_name[0]}")
@@ -179,8 +179,9 @@ def upon_budget_input():
 
 
         # column design
-        col_recommended,col_1_lower,col_1_higher = st.columns([2,1,1])
+        col_recommended,col_1_lower,col_1_higher = st.columns([1.5,1,1])
 
+        
         recommend_col(
             col = col_recommended,
             title = "recommended",
