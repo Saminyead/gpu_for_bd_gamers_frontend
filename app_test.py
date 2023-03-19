@@ -121,9 +121,6 @@ def upon_budget_input():
             price_per_tier_1_higher = df_1_higher.iloc[0][price_per_tier_score]
 
 
-        # column design
-        col_recommended,col_1_lower,col_1_higher = st.columns(3)
-
         # function for showing the columns
         def recommend_col(col,title:str,gpu_df:pd.DataFrame,compare_df:pd.DataFrame = None,budget:int=budget_input):
             """for displaying a st.column of either recommended gpu, 1 price tier lower, or 1 price tier higher
@@ -175,7 +172,14 @@ def upon_budget_input():
                 col_retailer, col_gpu_name = col.columns(2)
                 col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
                 col_gpu_name.write(f"{row.gpu_name}")
+
+
+        # writing each columns
         
+
+
+        # column design
+        col_recommended,col_1_lower,col_1_higher = st.columns([2,1,1])
 
         recommend_col(
             col = col_recommended,
