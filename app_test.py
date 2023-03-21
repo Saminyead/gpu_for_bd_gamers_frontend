@@ -8,7 +8,7 @@ st.set_page_config(layout="centered")
 
 # Initialize connection.
 # Uses st.cache_resource to only run once.
-@st.cache_resource
+@st.cache_resource(ttl=3600)
 
 def init_connection():
     return psycopg2.connect(**st.secrets["postgres"])
@@ -149,19 +149,19 @@ def upon_budget_input():
                 tier_diff_pct = abs(tier_diff / compare_df.iloc[0][tier_score_col] * 100)
 
                 if tier_diff < 0:
-                    col.write(f"Save BDT. {price_diff:,}")
-                    col.write("")
-                    col.write("")
+                    col.write(f"*Save BDT. {price_diff:,}*")
+                    for _ in range(1):
+                        col.write("")
                     col.write(f"""
-                    Performs within {tier_diff_pct:.1f}%  
-                    Cheaper by {price_diff_pct:.1f}%""")
+                    **Performs within {tier_diff_pct:.1f}%**  
+                    **Cheaper by {price_diff_pct:.1f}%**""")
 
                 
                 else:
-                    col.write(f"For BDT. {price_diff_budget:,} ({round(price_diff_budget_pct)}%) higher than your budget:")
+                    col.write(f"*For BDT. {price_diff_budget:,} ({round(price_diff_budget_pct)}%) higher than your budget:*")
                     col.write(f""" 
-                        {tier_diff_pct:.1f}% higher performance  
-                        {price_diff_pct:.1f}% higher price"""
+                        **{tier_diff_pct:.1f}% higher performance**  
+                        **{price_diff_pct:.1f}% higher price**"""
                     )
             else:
                 for _ in range(6):
@@ -169,10 +169,10 @@ def upon_budget_input():
 
             col.write(f"""
             ##### Price:   
-            **\u09F3 {gpu_df.gpu_price[0]:,}**""")
+            \u09F3 {gpu_df.gpu_price[0]:,}""")
             col.write(f"""
-            ##### Tier Score:   
-            **{gpu_df.iloc[0][tier_score_col]:.1f}**""")
+            ##### [Tier Score](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'What is Tier Score?'):   
+            {gpu_df.iloc[0][tier_score_col]:.1f}""")
             col.write("##### Available At:")
             for index, row in gpu_df.iterrows():
                 col_retailer, col_gpu_name = col.columns(2)
@@ -184,7 +184,7 @@ def upon_budget_input():
 
 
         # column design
-        col_recommended,col_1_lower,col_1_higher = st.columns(3)
+        col_recommended,col_1_lower,col_1_higher = st.columns([1.2,1,1])
 
         
         recommend_col(
