@@ -20,7 +20,13 @@ conn = init_connection()
 # dropdown for determining which tier score
 is_ray_tracing = st.selectbox(
 "Are you willing to pay a premium for Ray Tracing?",
-["Yes","No"]
+["Yes","No"],
+help=r"""
+Let's say, GPU A and GPU B were both the same price, but GPU A's average performance was 5% higher.
+On the other hand,GPU B had ray tracing capabilities. Which would you prefer to buy?   
+If GPU A, then select 'Yes'.
+If GPU B, then select 'No'.
+"""
 )
 
 if is_ray_tracing=="Yes":
