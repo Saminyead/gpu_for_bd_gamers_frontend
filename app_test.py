@@ -150,7 +150,8 @@ def upon_budget_input():
 
                 if tier_diff < 0:
                     col.write(f"Save BDT. {price_diff:,}")
-                    col.write("") 
+                    col.write("")
+                    col.write("")
                     col.write(f"""
                     Performs within {tier_diff_pct:.2f}%  
                     Cheaper by {price_diff_pct:.2f}%""")
@@ -163,16 +164,16 @@ def upon_budget_input():
                         {round(price_diff_pct)}% higher price"""
                     )
             else:
-                col.write("")
-                col.write("")
-                col.write("")
+                for _ in range(6):
+                    col.write("")
 
             col.write(f"""
             ##### Price:   
-            ##### \u09F3 {gpu_df.gpu_price[0]:,}""")
+            **\u09F3 {gpu_df.gpu_price[0]:,}**""")
             col.write(f"""
-            Tier Score:   
-            {round((gpu_df.iloc[0][tier_score_col]),2)}""")
+            ##### Tier Score:   
+            {gpu_df.iloc[0][tier_score_col]:.2f}""")
+            col.write("##### Available At:")
             for index, row in gpu_df.iterrows():
                 col_retailer, col_gpu_name = col.columns(2)
                 col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
@@ -183,7 +184,7 @@ def upon_budget_input():
 
 
         # column design
-        col_recommended,col_1_lower,col_1_higher = st.columns([1.5,1,1])
+        col_recommended,col_1_lower,col_1_higher = st.columns(3)
 
         
         recommend_col(
