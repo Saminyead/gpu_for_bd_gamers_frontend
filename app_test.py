@@ -153,15 +153,15 @@ def upon_budget_input():
                     col.write("")
                     col.write("")
                     col.write(f"""
-                    Performs within {tier_diff_pct:.2f}%  
-                    Cheaper by {price_diff_pct:.2f}%""")
+                    Performs within {tier_diff_pct:.1f}%  
+                    Cheaper by {price_diff_pct:.1f}%""")
 
                 
                 else:
                     col.write(f"For BDT. {price_diff_budget:,} ({round(price_diff_budget_pct)}%) higher than your budget:")
                     col.write(f""" 
-                        {round(tier_diff_pct)}% higher performance  
-                        {round(price_diff_pct)}% higher price"""
+                        {tier_diff_pct:.1f}% higher performance  
+                        {price_diff_pct:.1f}% higher price"""
                     )
             else:
                 for _ in range(6):
@@ -172,7 +172,7 @@ def upon_budget_input():
             **\u09F3 {gpu_df.gpu_price[0]:,}**""")
             col.write(f"""
             ##### Tier Score:   
-            {gpu_df.iloc[0][tier_score_col]:.2f}""")
+            **{gpu_df.iloc[0][tier_score_col]:.1f}**""")
             col.write("##### Available At:")
             for index, row in gpu_df.iterrows():
                 col_retailer, col_gpu_name = col.columns(2)
