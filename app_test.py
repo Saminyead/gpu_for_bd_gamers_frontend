@@ -152,8 +152,8 @@ def upon_budget_input():
                     col.write(f"Save BDT. {price_diff:,}")
                     col.write("") 
                     col.write(f"""
-                    Performs within {round(tier_diff_pct,2)}%  
-                    Cheaper by {round(price_diff_pct,2)}%""")
+                    Performs within {tier_diff_pct:.2f}%  
+                    Cheaper by {price_diff_pct:.2f}%""")
 
                 
                 else:
@@ -162,11 +162,14 @@ def upon_budget_input():
                         {round(tier_diff_pct)}% higher performance  
                         {round(price_diff_pct)}% higher price"""
                     )
-            # else:
+            else:
+                col.write("")
+                col.write("")
+                col.write("")
 
             col.write(f"""
-            Price:   
-            BDT. {gpu_df.gpu_price[0]:,}""")
+            ##### Price:   
+            ##### \u09F3 {gpu_df.gpu_price[0]:,}""")
             col.write(f"""
             Tier Score:   
             {round((gpu_df.iloc[0][tier_score_col]),2)}""")
