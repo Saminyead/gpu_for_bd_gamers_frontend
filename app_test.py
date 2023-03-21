@@ -149,18 +149,20 @@ def upon_budget_input():
                 tier_diff_pct = abs(tier_diff / compare_df.iloc[0][tier_score_col] * 100)
 
                 if tier_diff < 0:
-                    col.write(
-                    f"""
-                    Save BDT. {price_diff:,}   
-                    Performs within {round(tier_diff_pct,2)}%, costs {round(price_diff_pct,2)}% lower price"""
-                )
+                    col.write(f"Save BDT. {price_diff:,}")
+                    col.write("") 
+                    col.write(f"""
+                    Performs within {round(tier_diff_pct,2)}%  
+                    Cheaper by {round(price_diff_pct,2)}%""")
+
                 
                 else:
-                    col.write(
-                        f"""
-                        For BDT. {price_diff_budget:,} ({round(price_diff_budget_pct)}%) higher than your budget:   
-                        Provides {round(tier_diff_pct)}% higher performance for just {round(price_diff_pct)}% higher price"""
+                    col.write(f"For BDT. {price_diff_budget:,} ({round(price_diff_budget_pct)}%) higher than your budget:")
+                    col.write(f""" 
+                        {round(tier_diff_pct)}% higher performance  
+                        {round(price_diff_pct)}% higher price"""
                     )
+            # else:
 
             col.write(f"""
             Price:   
