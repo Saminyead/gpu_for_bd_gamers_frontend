@@ -174,8 +174,7 @@ def upon_budget_input():
                 col_gpu_name.write(f"{row.gpu_name}")
 
 
-        # the header of each column, the 1_lower and 1_higher will also have a bar graph comparision
-        col_header_row = ["","",""]
+
 
 
         # column design
