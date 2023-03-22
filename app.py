@@ -56,7 +56,8 @@ else:
 # input budget
 budget_input = st.number_input(
     label = "Enter your budget here in BDT. (***Only enter numbers***)",
-    min_value = 0
+    min_value = 0,
+    step = 1000
 )
 
 # recommend a GPU
