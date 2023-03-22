@@ -154,7 +154,7 @@ def upon_budget_input(
             """
 
             title_list = {
-                "recommended":"Top performing GPU for your budget",
+                "recommended":"Top Performing GPU for Your Budget",
                 "1_lower":"Lower Price, Close in Performance",
                 "1_higher":"Higher Price, Much Higher Performance"
             }
