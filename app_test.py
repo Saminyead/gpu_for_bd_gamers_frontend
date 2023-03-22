@@ -188,7 +188,7 @@ def upon_budget_input():
             \u09F3 {gpu_df.gpu_price[0]:,}""")
             col.write(f"""
             ##### [{tier_score_ui}](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'What is Tier Score?'):   
-            {gpu_df.iloc[0][tier_score_col]:.1f}""")
+            {gpu_df.iloc[0][tier_score_col]:.2f}""")
             col.write("##### Available At:")
             for index, row in gpu_df.iterrows():
                 col_retailer, col_gpu_name = col.columns(2)
