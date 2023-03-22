@@ -107,7 +107,11 @@ def get_best_cards_all(gpu_unit:str):
 
 
 # function to execute upon budget_input
-def upon_budget_input():
+def upon_budget_input(
+    tier_score_for_func:str = tier_score_col,
+    price_per_tier_for_func:str = price_per_tier_score,
+    tier_score_ui_for_func:str = tier_score_ui
+):
     get_best_card_df()
     if len(get_best_card_df()) == 0:
         too_low_gtx_1050_ti()
@@ -116,16 +120,16 @@ def upon_budget_input():
         recommended_gpu_unit_name = get_best_card_df().gpu_unit_name[0]
         recommended_gpu_df_price = get_best_card_df().gpu_price[0]
         recommended_gpu_df = get_best_cards_all(recommended_gpu_unit_name)
-        recommended_gpu_tier_score = recommended_gpu_df.iloc[0][tier_score_col]
-        recommended_gpu_price_per_tier = recommended_gpu_df.iloc[0][price_per_tier_score]
+        recommended_gpu_tier_score = recommended_gpu_df.iloc[0][tier_score_for_func]
+        recommended_gpu_price_per_tier = recommended_gpu_df.iloc[0][price_per_tier_for_func]
 
         # finding out GPU 1 price tier lower
         df_1_lower = get_best_card_df(budget=recommended_gpu_df_price,which_query="lower")
         # for the GTX 1050 Ti, df_1_lower becomes an empty dataframe
         if len(df_1_lower) != 0:
             df_1_lower_gpu_unit = df_1_lower.gpu_unit_name[0]
-            price_per_tier_1_lower = df_1_lower.iloc[0][price_per_tier_score]
-            tier_score_1_lower = df_1_lower.iloc[0][tier_score_col]
+            price_per_tier_1_lower = df_1_lower.iloc[0][price_per_tier_for_func]
+            tier_score_1_lower = df_1_lower.iloc[0][tier_score_for_func]
             tier_diff_1_lower = abs(tier_score_1_lower - recommended_gpu_tier_score)
             tier_diff_pct_1_lower = tier_diff_1_lower / recommended_gpu_tier_score * 100
 
@@ -134,7 +138,7 @@ def upon_budget_input():
         # expecting something similar to the df_1_lower happening
         if len(df_1_higher) != 0:
             df_1_higher_gpu_unit = df_1_higher.gpu_unit_name[0]
-            price_per_tier_1_higher = df_1_higher.iloc[0][price_per_tier_score]
+            price_per_tier_1_higher = df_1_higher.iloc[0][price_per_tier_for_func]
 
 
         # function for showing the columns
@@ -161,8 +165,8 @@ def upon_budget_input():
                 price_diff_pct = price_diff / compare_df.gpu_price[0] * 100
                 price_diff_budget = abs(gpu_df.gpu_price[0] - budget)
                 price_diff_budget_pct = price_diff_budget / budget * 100
-                tier_diff = gpu_df.iloc[0][tier_score_col] - compare_df.iloc[0][tier_score_col]
-                tier_diff_pct = abs(tier_diff / compare_df.iloc[0][tier_score_col] * 100)
+                tier_diff = gpu_df.iloc[0][tier_score_for_func] - compare_df.iloc[0][tier_score_for_func]
+                tier_diff_pct = abs(tier_diff / compare_df.iloc[0][tier_score_for_func] * 100)
 
                 if tier_diff < 0:
                     col.write(f"*Save BDT. {price_diff:,}*")
@@ -187,7 +191,7 @@ def upon_budget_input():
             ##### Price:   
             \u09F3 {gpu_df.gpu_price[0]:,}""")
             col.write(f"""
-            ##### [{tier_score_ui}](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'What is Tier Score?'):   
+            ##### [{tier_score_ui_for_func}](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'What is Tier Score?'):   
             {gpu_df.iloc[0][tier_score_col]:.2f}""")
             col.write("##### Available At:")
             for index, row in gpu_df.iterrows():
