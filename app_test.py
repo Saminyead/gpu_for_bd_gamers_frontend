@@ -3,7 +3,7 @@ import psycopg2
 import pandas as pd
 
 # for wide configuration, looks better this way
-st.set_page_config(layout="centered")
+st.set_page_config(layout="wide")
 
 
 # Initialize connection.
@@ -32,6 +32,7 @@ If GPU B, then select 'No'.
 if is_ray_tracing=="Yes":
     tier_score_col = 'net_tier_score'
     price_per_tier_score = 'price_per_net_tier'
+    tier_score_ui = 'Net Tier Score'
 else:
     weighted_recommendation = "Consider both positive and negative traits of GPU"
     raw_perf_recommendation = "Consider raw performance only"
@@ -42,9 +43,11 @@ else:
     if tier_score_selection==weighted_recommendation:
         tier_score_col = 'non_rt_net_score'
         price_per_tier_score = 'price_per_non_rt_tier'
+        tier_score_ui = 'Non-RT Tier Score'
     else:
         tier_score_col = 'base_tier_score'
         price_per_tier_score = 'price_per_base_tier'
+        tier_score_ui = 'Base Tier Score'
 
 # input budget
 budget_input = st.number_input(
@@ -177,7 +180,7 @@ def upon_budget_input():
             ##### Price:   
             \u09F3 {gpu_df.gpu_price[0]:,}""")
             col.write(f"""
-            ##### [Tier Score](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'What is Tier Score?'):   
+            ##### [{tier_score_ui}](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'What is Tier Score?'):   
             {gpu_df.iloc[0][tier_score_col]:.1f}""")
             col.write("##### Available At:")
             for index, row in gpu_df.iterrows():
