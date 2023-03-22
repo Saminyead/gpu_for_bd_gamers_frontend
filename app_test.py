@@ -16,6 +16,10 @@ def init_connection():
 conn = init_connection()
 
 
+# title and short descriptio of the app
+st.title(':Blue[Buy the Best Graphics Card for Your Budget]')
+st.caption('For Bangladeshi Gamers. Based on Live Data of the Bangladeshi GPU Market')
+
 
 # dropdown for determining which tier score
 is_ray_tracing = st.selectbox(
