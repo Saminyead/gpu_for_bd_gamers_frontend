@@ -55,7 +55,7 @@ else:
 
 # input budget
 budget_input = st.number_input(
-    label = "Enter your budget here (in BDT.)",
+    label = "Enter your budget here in BDT. (***Only enter numbers***)",
     min_value = 0
 )
 
