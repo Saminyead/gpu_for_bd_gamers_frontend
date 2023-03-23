@@ -112,6 +112,10 @@ def get_best_cards_all(gpu_unit:str):
     df_all_cards = pd.read_sql(sql=query_all_cards,con=conn)
     return df_all_cards
 
+# comment_table will be necessary to display the positive and negative attributes of the GPU later
+@st.cache_data(ttl=3600)  # caching because comment table will hardly change
+def get_comment_table(query=f"SELECT * FROM comment_table",connection=conn):
+    return pd.read_sql(sql=query,con=connection)
 
 # function to execute upon budget_input
 def upon_budget_input(
@@ -205,6 +209,21 @@ def upon_budget_input(
                 col_retailer, col_gpu_name = col.columns(2)
                 col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
                 col_gpu_name.write(f"{row.gpu_name}")
+            
+            tier_score_query = f"SELECT gpu_unit_name,positive_comment_code,negative_comment_code FROM tier_score_table WHERE gpu_unit_name='{gpu_df.gpu_unit_name[0]}'"
+            comment_code_gpu_df = pd.read_sql(sql=tier_score_query,con=conn)
+            # for displaying the positive and negative traits/features of the GPU
+            comment_table = get_comment_table()
+            positive_codes = comment_code_gpu_df['positive_comment_code'].loc[comment_code_gpu_df.gpu_unit_name==gpu_df.gpu_unit_name[0]].iloc[0]
+            if positive_codes:  # sometimes if there are positive_comment_code is empty, in which case it is None
+                for code in positive_codes.split():
+                    desc = comment_table.loc[comment_table.comment_code==code]['comment_desc'].iloc[0]
+                    col.write(f":white_check_mark: {desc}")
+            negative_codes = comment_code_gpu_df['negative_comment_code'].loc[comment_code_gpu_df.gpu_unit_name==gpu_df.gpu_unit_name[0]].iloc[0]
+            if negative_codes:  # sometimes if there are negative_comment_code is empty, in which case it is None
+                for n_code in negative_codes.split():
+                    n_desc = comment_table.loc[comment_table.comment_code==n_code]['comment_desc'].iloc[0]
+                    col.write(f":heavy_exclamation_mark: {n_desc}")
 
 
 
