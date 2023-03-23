@@ -25,7 +25,7 @@ st.caption('For Bangladeshi Gamers. Based on Live Data of the Bangladeshi GPU Ma
 
 # dropdown for determining which tier score
 is_ray_tracing = st.selectbox(
-"Are you willing to pay a premium for Ray Tracing?",
+"According to you, is Ray Tracing worth paying more for?",
 ["Yes","No"],
 help=r"""
 Let's say, GPU A and GPU B were both the same price, but GPU A's average performance was 5% higher.
