@@ -141,7 +141,7 @@ def upon_budget_input(
             tier_diff_pct_1_lower = tier_diff_1_lower / recommended_gpu_tier_score * 100
 
         # finding out GPU 1 price tier higher
-        df_1_higher = get_best_card_df(budget= budget_input,which_query="higher")
+        df_1_higher = get_best_card_df(budget= budget_input,which_query="higher",budget_multiplier_pct=20)
         # expecting something similar to the df_1_lower happening
         if len(df_1_higher) != 0:
             df_1_higher_gpu_unit = df_1_higher.gpu_unit_name[0]
