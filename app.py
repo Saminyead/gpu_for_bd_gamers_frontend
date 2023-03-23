@@ -3,7 +3,9 @@ import psycopg2
 import pandas as pd
 
 # for wide configuration, looks better this way
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="BD Gamer's GPU for Budget",
+    layout="wide")
 
 
 # Initialize connection.
