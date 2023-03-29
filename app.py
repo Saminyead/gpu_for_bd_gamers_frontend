@@ -62,6 +62,9 @@ budget_input = st.number_input(
     step = 1000
 )
 
+
+
+
 # recommend a GPU
 def get_best_card_df(
     budget:int = budget_input, 
@@ -97,6 +100,9 @@ def get_best_card_df(
     query_best_card_df = pd.read_sql(sql = query_price, con = conn)
     return query_best_card_df
 
+
+
+
 # if budget too low
 def too_low_gtx_1050_ti():
     query_gtx_1050_ti = f"SELECT * FROM lowest_prices_tiered WHERE gpu_unit_name = 'Geforce GTX 1050 Ti'"
@@ -106,16 +112,30 @@ def too_low_gtx_1050_ti():
         f"No good GPU's to recommend for this budget. Consider increasing your budget to BDT. {price_gtx_1050_ti:,} to get the GTX 1050 Ti"
         ) # the price is written like this to show thousand separator
 
+
+
+
 # all recommended gpus
 def get_best_cards_all(gpu_unit:str):
     query_all_cards = f"SELECT * FROM lowest_prices_tiered WHERE gpu_unit_name = '{gpu_unit}'"
     df_all_cards = pd.read_sql(sql=query_all_cards,con=conn)
     return df_all_cards
 
+
+
+
 # comment_table will be necessary to display the positive and negative attributes of the GPU later
 @st.cache_data(ttl=3600)  # caching because comment table will hardly change
 def get_comment_table(query=f"SELECT * FROM comment_table",connection=conn):
     return pd.read_sql(sql=query,con=connection)
+
+
+
+def get_all_aib_cards_df(gpu:str,connection=conn):
+    query_aib_cards = f"SELECT * FROM gpu_of_interest WHERE gpu_unit_name = '{gpu}' ORDER BY gpu_price ASC"
+    df_all_aib_cards = pd.read_sql(sql=query_aib_cards,con=connection)
+    return df_all_aib_cards
+
 
 # function to execute upon budget_input
 def upon_budget_input(
@@ -153,7 +173,7 @@ def upon_budget_input(
 
 
         # function for showing the columns
-        def recommend_col(col,title:str,gpu_df:pd.DataFrame,compare_df:pd.DataFrame = None,budget:int=budget_input):
+        def recommend_col(col,col_btn_id:str,title:str,gpu_df:pd.DataFrame,compare_df:pd.DataFrame = None,budget:int=budget_input):
             """for displaying a st.column of either recommended gpu, 1 price tier lower, or 1 price tier higher
 
             Args:
@@ -162,6 +182,7 @@ def upon_budget_input(
                 gpu_df (pd.DataFrame): which dataframe - recommended_df, df_1_lower_all or df_1_higher_all
                 compare_df (pd.DataFrame): for 1_lower and 1_higher, the dataframe to compare to (mainly juust recommended). Defailts to None
                 budget (int): the input budget. Defaults to budget_input
+                col_btn_id (str): 
             """
 
             title_list = {
@@ -194,12 +215,13 @@ def upon_budget_input(
                         **{tier_diff_pct:.1f}% higher performance**  
                         **{price_diff_pct:.1f}% higher price**"""
                     )
+
+
             else:
                 for _ in range(6):
                     col.write("")
-
             col.write(f"""
-            ##### Price:   
+            ##### Price of Lowest-price Model:   
             \u09F3 {gpu_df.gpu_price[0]:,}""")
             col.write(f"""
             ##### [{tier_score_ui_for_func}](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'What is Tier Score?'):   
@@ -210,8 +232,10 @@ def upon_budget_input(
                 col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
                 col_gpu_name.write(f"{row.gpu_name}")
             
+            
             tier_score_query = f"SELECT gpu_unit_name,positive_comment_code,negative_comment_code FROM tier_score_table WHERE gpu_unit_name='{gpu_df.gpu_unit_name[0]}'"
             comment_code_gpu_df = pd.read_sql(sql=tier_score_query,con=conn)
+
             # for displaying the positive and negative traits/features of the GPU
             comment_table = get_comment_table()
             positive_codes = comment_code_gpu_df['positive_comment_code'].loc[comment_code_gpu_df.gpu_unit_name==gpu_df.gpu_unit_name[0]].iloc[0]
@@ -224,31 +248,28 @@ def upon_budget_input(
                 for n_code in negative_codes.split():
                     n_desc = comment_table.loc[comment_table.comment_code==n_code]['comment_desc'].iloc[0]
                     col.write(f":heavy_exclamation_mark: {n_desc}")
-
-
-
+            
+            show_all_aib_cards_btn = col.checkbox(label='*Show More Models*',key=col_btn_id)
+            if show_all_aib_cards_btn:
+                col.write("##### Other Available Models:")
+                for index,row in get_all_aib_cards_df(gpu_df.gpu_unit_name.iloc[0]).iterrows():
+                    col_gpu_name_aib,col_retailer_aib,col_aib_price = col.columns(3)
+                    col_gpu_name_aib.write(f"{row.gpu_name}")
+                    col_retailer_aib.write(f"[{row.retailer_name}]({row.retail_url})")
+                    col_aib_price.write(f"\u09F3 {row.gpu_price:,}")
 
 
         # column design
-        col_recommended,col_1_lower,col_1_higher = st.columns([1.2,1,1])
+        col_recommended,col_1_lower,col_1_higher = st.columns([1.2,1,1],gap='large')
 
         
-        recommend_col(
-            col = col_recommended,
-            title = "recommended",
-            gpu_df = recommended_gpu_df
-        )
+        recommend_col(col = col_recommended,title = "recommended",gpu_df = recommended_gpu_df, col_btn_id='recommended')
         
         # for recommending better value GPU 1 price tier below
         if len(df_1_lower) != 0:
             if price_per_tier_1_lower < recommended_gpu_price_per_tier and tier_diff_pct_1_lower < 10:
                 df_1_lower_all = get_best_cards_all(df_1_lower_gpu_unit)
-                recommend_col(
-                    col = col_1_lower,
-                    title = "1_lower",
-                    gpu_df=df_1_lower_all,
-                    compare_df=recommended_gpu_df
-                )
+                recommend_col(col = col_1_lower,title = "1_lower",gpu_df=df_1_lower_all,compare_df=recommended_gpu_df,col_btn_id='1_lower')
         
 
         # for recommending better value GPU 1 price tier higher
@@ -259,7 +280,8 @@ def upon_budget_input(
                     col = col_1_higher,
                     title = "1_higher",
                     gpu_df = df_1_higher_all,
-                    compare_df = recommended_gpu_df
+                    compare_df = recommended_gpu_df,
+                    col_btn_id='1_higher'
                 )
         
 
