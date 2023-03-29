@@ -224,7 +224,7 @@ def upon_budget_input(
             ##### Price of Lowest-price Model:   
             \u09F3 {gpu_df.gpu_price[0]:,}""")
             col.write(f"""
-            ##### [{tier_score_ui_for_func}](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'Basically, the performance score of the GPU. Click to learn more about Tier Scores'):   
+            ##### [{tier_score_ui_for_func}](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'Basically, the performance score of the GPU. Click to learn more about Tier Scores.'):   
             {gpu_df.iloc[0][tier_score_col]:.2f}""")
             col.write("##### Available At:")
             for index, row in gpu_df.iterrows():
