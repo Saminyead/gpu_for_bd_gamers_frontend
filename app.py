@@ -24,7 +24,7 @@ st.caption('For Bangladeshi Gamers. Based on Live Data of the Bangladeshi GPU Ma
 
 
 # dropdown for determining which tier score
-is_ray_tracing = st.selectbox(
+is_ray_tracing = st.radio(
 "According to you, is Ray Tracing worth paying more for?",
 ["Yes","No"],
 help=r"""
@@ -42,7 +42,7 @@ if is_ray_tracing=="Yes":
 else:
     weighted_recommendation = "Consider both positive and negative traits of GPU"
     raw_perf_recommendation = "Consider raw performance only"
-    tier_score_selection = st.selectbox(
+    tier_score_selection = st.radio(
         label="How do you want the GPU performance values to be calculated?",
         options=[weighted_recommendation,raw_perf_recommendation]
     )
