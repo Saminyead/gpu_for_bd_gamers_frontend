@@ -55,6 +55,9 @@ else:
         price_per_tier_score = 'price_per_base_tier'
         tier_score_ui = 'Base Tier Score'
 
+# selected tier score
+st.write(f"#### Selected Performance Score: *[{tier_score_ui}](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'Click to learn more about Tier Scores.')* ")
+
 # input budget
 budget_input = st.number_input(
     label = "Enter your budget here in BDT. (***Only enter numbers***)",
@@ -140,8 +143,7 @@ def get_all_aib_cards_df(gpu:str,connection=conn):
 # function to execute upon budget_input
 def upon_budget_input(
     tier_score_for_func:str = tier_score_col,
-    price_per_tier_for_func:str = price_per_tier_score,
-    tier_score_ui_for_func:str = tier_score_ui
+    price_per_tier_for_func:str = price_per_tier_score
 ):
     get_best_card_df()
     if len(get_best_card_df()) == 0:
@@ -224,7 +226,7 @@ def upon_budget_input(
             ##### Price of Lowest-price Model:   
             \u09F3 {gpu_df.gpu_price[0]:,}""")
             col.write(f"""
-            ##### [{tier_score_ui_for_func}](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md 'Basically, the performance score of the GPU. Click to learn more about Tier Scores.'):   
+            ##### Performance Score:   
             {gpu_df.iloc[0][tier_score_col]:.2f}""")
             col.write("##### Available At:")
             for index, row in gpu_df.iterrows():
