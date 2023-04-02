@@ -2,6 +2,7 @@ import streamlit as st
 import psycopg2
 import pandas as pd
 
+
 # for wide configuration, looks better this way
 st.set_page_config(
     page_title="BD Gamers' GPU for Budget",
@@ -11,7 +12,6 @@ st.set_page_config(
 # Initialize connection.
 # Uses st.cache_resource to only run once.
 @st.cache_resource(ttl=3600)
-
 def init_connection():
     return psycopg2.connect(**st.secrets["postgres"])
 
