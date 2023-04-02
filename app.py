@@ -128,7 +128,6 @@ def get_best_cards_all(gpu_unit:str):
 
 
 # comment_table will be necessary to display the positive and negative attributes of the GPU later
-@st.cache_data(ttl=3600)  # caching because comment table will hardly change
 def get_comment_table(query=f"SELECT * FROM comment_table",connection=conn):
     return pd.read_sql(sql=query,con=connection)
 
