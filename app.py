@@ -133,10 +133,109 @@ def get_comment_table(query=f"SELECT * FROM comment_table",connection=conn):
 
 
 
+
 def get_all_aib_cards_df(gpu:str,connection=conn):
     query_aib_cards = f"SELECT * FROM gpu_of_interest WHERE gpu_unit_name = '{gpu}' ORDER BY gpu_price ASC"
     df_all_aib_cards = pd.read_sql(sql=query_aib_cards,con=connection)
     return df_all_aib_cards
+
+
+
+
+# function for showing the columns
+def recommend_col(
+    col,
+    col_btn_id:str,
+    title:str,
+    gpu_df:pd.DataFrame,
+    tier_score_for_func:str = tier_score_col,
+    compare_df:pd.DataFrame = None,
+    budget:int=budget_input,
+    ):
+    """for displaying a st.column of either recommended gpu, 1 price tier lower, or 1 price tier higher
+
+    Args:
+        col (_type_): which column - col_recommended, col_1_lower or col_1_higher
+        col_btn_id (str): "recommended", "1_lower" or "1_higher"
+        title (str): "recommended","1_lower" or "1_higher"
+        gpu_df (pd.DataFrame): which dataframe - recommended_df, df_1_lower_all or df_1_higher_all
+        tier_score_for_func (str): imports tier_score_col into the scope of the function, just keep it default. defaults to tier_score_col
+        compare_df (pd.DataFrame): for 1_lower and 1_higher, the dataframe to compare to (mainly juust recommended). Defailts to None
+        budget (int): the input budget. Defaults to budget_input 
+    """
+
+    title_list = {
+        "recommended":"Top Performing GPU for Your Budget",
+        "1_lower":"Lower Price, Close in Performance",
+        "1_higher":"Higher Price, Much Higher Performance"
+    }
+    col.header(title_list[title])
+    col.write(f"### {gpu_df.gpu_unit_name[0]}")
+    if title != "recommended":
+        price_diff = abs(gpu_df.gpu_price[0] - compare_df.gpu_price[0])
+        price_diff_pct = price_diff / compare_df.gpu_price[0] * 100
+        price_diff_budget = abs(gpu_df.gpu_price[0] - budget)
+        price_diff_budget_pct = price_diff_budget / budget * 100
+        tier_diff = gpu_df.iloc[0][tier_score_for_func] - compare_df.iloc[0][tier_score_for_func]
+        tier_diff_pct = abs(tier_diff / compare_df.iloc[0][tier_score_for_func] * 100)
+
+        if tier_diff < 0:
+            col.write(f"*Save BDT. {price_diff:,}*")
+            for _ in range(1):
+                col.write("")
+            col.write(f"""
+            **Performs within {tier_diff_pct:.1f}%**  
+            **Cheaper by {price_diff_pct:.1f}%**""")
+
+        
+        else:
+            col.write(f"*For BDT. {price_diff_budget:,} ({round(price_diff_budget_pct)}%) higher than your budget:*")
+            col.write(f""" 
+                **{tier_diff_pct:.1f}% higher performance**  
+                **{price_diff_pct:.1f}% higher price**"""
+            )
+
+
+    else:
+        for _ in range(6):
+            col.write("")
+    col.write(f"""
+    ##### Price of Lowest-price Model:   
+    \u09F3 {gpu_df.gpu_price[0]:,}""")
+    col.write(f"""
+    ##### Performance Score:   
+    {gpu_df.iloc[0][tier_score_col]:.2f}""")
+    col.write("##### Available At:")
+    for index, row in gpu_df.iterrows():
+        col_retailer, col_gpu_name = col.columns(2)
+        col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
+        col_gpu_name.write(f"{row.gpu_name}")
+    
+    
+    tier_score_query = f"SELECT gpu_unit_name,positive_comment_code,negative_comment_code FROM tier_score_table WHERE gpu_unit_name='{gpu_df.gpu_unit_name[0]}'"
+    comment_code_gpu_df = pd.read_sql(sql=tier_score_query,con=conn)
+
+    # for displaying the positive and negative traits/features of the GPU
+    comment_table = get_comment_table()
+    positive_codes = comment_code_gpu_df['positive_comment_code'].loc[comment_code_gpu_df.gpu_unit_name==gpu_df.gpu_unit_name[0]].iloc[0]
+    if positive_codes:  # sometimes if there are positive_comment_code is empty, in which case it is None
+        for code in positive_codes.split():
+            desc = comment_table.loc[comment_table.comment_code==code]['comment_desc'].iloc[0]
+            col.write(f":white_check_mark: {desc}")
+    negative_codes = comment_code_gpu_df['negative_comment_code'].loc[comment_code_gpu_df.gpu_unit_name==gpu_df.gpu_unit_name[0]].iloc[0]
+    if negative_codes:  # sometimes if there are negative_comment_code is empty, in which case it is None
+        for n_code in negative_codes.split():
+            n_desc = comment_table.loc[comment_table.comment_code==n_code]['comment_desc'].iloc[0]
+            col.write(f":heavy_exclamation_mark: {n_desc}")
+    
+    show_all_aib_cards_btn = col.checkbox(label='*Show More Models*',key=col_btn_id)
+    if show_all_aib_cards_btn:
+        col.write("##### Other Available Models:")
+        for index,row in get_all_aib_cards_df(gpu_df.gpu_unit_name.iloc[0]).iterrows():
+            col_gpu_name_aib,col_retailer_aib,col_aib_price = col.columns(3)
+            col_gpu_name_aib.write(f"{row.gpu_name}")
+            col_retailer_aib.write(f"[{row.retailer_name}]({row.retail_url})")
+            col_aib_price.write(f"\u09F3 {row.gpu_price:,}")
 
 
 # function to execute upon budget_input
@@ -171,93 +270,6 @@ def upon_budget_input(
         if len(df_1_higher) != 0:
             df_1_higher_gpu_unit = df_1_higher.gpu_unit_name[0]
             price_per_tier_1_higher = df_1_higher.iloc[0][price_per_tier_for_func]
-
-
-        # function for showing the columns
-        def recommend_col(col,col_btn_id:str,title:str,gpu_df:pd.DataFrame,compare_df:pd.DataFrame = None,budget:int=budget_input):
-            """for displaying a st.column of either recommended gpu, 1 price tier lower, or 1 price tier higher
-
-            Args:
-                col (_type_): which column - col_recommended, col_1_lower or col_1_higher
-                title (str): "recommended","1_lower" or "1_higher"
-                gpu_df (pd.DataFrame): which dataframe - recommended_df, df_1_lower_all or df_1_higher_all
-                compare_df (pd.DataFrame): for 1_lower and 1_higher, the dataframe to compare to (mainly juust recommended). Defailts to None
-                budget (int): the input budget. Defaults to budget_input
-                col_btn_id (str): 
-            """
-
-            title_list = {
-                "recommended":"Top Performing GPU for Your Budget",
-                "1_lower":"Lower Price, Close in Performance",
-                "1_higher":"Higher Price, Much Higher Performance"
-            }
-            col.header(title_list[title])
-            col.write(f"### {gpu_df.gpu_unit_name[0]}")
-            if title != "recommended":
-                price_diff = abs(gpu_df.gpu_price[0] - compare_df.gpu_price[0])
-                price_diff_pct = price_diff / compare_df.gpu_price[0] * 100
-                price_diff_budget = abs(gpu_df.gpu_price[0] - budget)
-                price_diff_budget_pct = price_diff_budget / budget * 100
-                tier_diff = gpu_df.iloc[0][tier_score_for_func] - compare_df.iloc[0][tier_score_for_func]
-                tier_diff_pct = abs(tier_diff / compare_df.iloc[0][tier_score_for_func] * 100)
-
-                if tier_diff < 0:
-                    col.write(f"*Save BDT. {price_diff:,}*")
-                    for _ in range(1):
-                        col.write("")
-                    col.write(f"""
-                    **Performs within {tier_diff_pct:.1f}%**  
-                    **Cheaper by {price_diff_pct:.1f}%**""")
-
-                
-                else:
-                    col.write(f"*For BDT. {price_diff_budget:,} ({round(price_diff_budget_pct)}%) higher than your budget:*")
-                    col.write(f""" 
-                        **{tier_diff_pct:.1f}% higher performance**  
-                        **{price_diff_pct:.1f}% higher price**"""
-                    )
-
-
-            else:
-                for _ in range(6):
-                    col.write("")
-            col.write(f"""
-            ##### Price of Lowest-price Model:   
-            \u09F3 {gpu_df.gpu_price[0]:,}""")
-            col.write(f"""
-            ##### Performance Score:   
-            {gpu_df.iloc[0][tier_score_col]:.2f}""")
-            col.write("##### Available At:")
-            for index, row in gpu_df.iterrows():
-                col_retailer, col_gpu_name = col.columns(2)
-                col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
-                col_gpu_name.write(f"{row.gpu_name}")
-            
-            
-            tier_score_query = f"SELECT gpu_unit_name,positive_comment_code,negative_comment_code FROM tier_score_table WHERE gpu_unit_name='{gpu_df.gpu_unit_name[0]}'"
-            comment_code_gpu_df = pd.read_sql(sql=tier_score_query,con=conn)
-
-            # for displaying the positive and negative traits/features of the GPU
-            comment_table = get_comment_table()
-            positive_codes = comment_code_gpu_df['positive_comment_code'].loc[comment_code_gpu_df.gpu_unit_name==gpu_df.gpu_unit_name[0]].iloc[0]
-            if positive_codes:  # sometimes if there are positive_comment_code is empty, in which case it is None
-                for code in positive_codes.split():
-                    desc = comment_table.loc[comment_table.comment_code==code]['comment_desc'].iloc[0]
-                    col.write(f":white_check_mark: {desc}")
-            negative_codes = comment_code_gpu_df['negative_comment_code'].loc[comment_code_gpu_df.gpu_unit_name==gpu_df.gpu_unit_name[0]].iloc[0]
-            if negative_codes:  # sometimes if there are negative_comment_code is empty, in which case it is None
-                for n_code in negative_codes.split():
-                    n_desc = comment_table.loc[comment_table.comment_code==n_code]['comment_desc'].iloc[0]
-                    col.write(f":heavy_exclamation_mark: {n_desc}")
-            
-            show_all_aib_cards_btn = col.checkbox(label='*Show More Models*',key=col_btn_id)
-            if show_all_aib_cards_btn:
-                col.write("##### Other Available Models:")
-                for index,row in get_all_aib_cards_df(gpu_df.gpu_unit_name.iloc[0]).iterrows():
-                    col_gpu_name_aib,col_retailer_aib,col_aib_price = col.columns(3)
-                    col_gpu_name_aib.write(f"{row.gpu_name}")
-                    col_retailer_aib.write(f"[{row.retailer_name}]({row.retail_url})")
-                    col_aib_price.write(f"\u09F3 {row.gpu_price:,}")
 
 
         # column design
