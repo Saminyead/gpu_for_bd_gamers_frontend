@@ -1,6 +1,7 @@
 import streamlit as st
 import psycopg2
 import pandas as pd
+import time
 
 
 # for wide configuration, looks better this way
@@ -306,4 +307,5 @@ recommend_btn = st.button(label="Recommend Me")
 
 if budget_input or recommend_btn:
     with st.spinner("###### Generating....."):
+        time.sleep(1)
         upon_budget_input()
