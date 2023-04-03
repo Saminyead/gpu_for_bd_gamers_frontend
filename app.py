@@ -238,10 +238,13 @@ def recommend_col(
             col_aib_price.write(f"\u09F3 {row.gpu_price:,}")
 
 
+
+
 # function to execute upon budget_input
 def upon_budget_input(
     tier_score_for_upon_budget_input:str = tier_score_col,
-    price_per_tier_for_upon_budget_input:str = price_per_tier_score
+    price_per_tier_for_upon_budget_input:str = price_per_tier_score,
+    recommend_col_func:callable = recommend_col
 ):
     get_best_card_df()
     if len(get_best_card_df()) == 0:
@@ -276,20 +279,20 @@ def upon_budget_input(
         col_recommended,col_1_lower,col_1_higher = st.columns([1.2,1,1],gap='large')
 
         
-        recommend_col(col = col_recommended,title = "recommended",gpu_df = recommended_gpu_df, col_btn_id='recommended')
+        recommend_col_func(col = col_recommended,title = "recommended",gpu_df = recommended_gpu_df, col_btn_id='recommended')
         
         # for recommending better value GPU 1 price tier below
         if len(df_1_lower) != 0:
             if price_per_tier_1_lower < recommended_gpu_price_per_tier and tier_diff_pct_1_lower < 10:
                 df_1_lower_all = get_best_cards_all(df_1_lower_gpu_unit)
-                recommend_col(col = col_1_lower,title = "1_lower",gpu_df=df_1_lower_all,compare_df=recommended_gpu_df,col_btn_id='1_lower')
+                recommend_col_func(col = col_1_lower,title = "1_lower",gpu_df=df_1_lower_all,compare_df=recommended_gpu_df,col_btn_id='1_lower')
         
 
         # for recommending better value GPU 1 price tier higher
         if len(df_1_higher) != 0:
             if price_per_tier_1_higher < recommended_gpu_price_per_tier:
                 df_1_higher_all = get_best_cards_all(df_1_higher_gpu_unit)
-                recommend_col(
+                recommend_col_func(
                     col = col_1_higher,
                     title = "1_higher",
                     gpu_df = df_1_higher_all,
