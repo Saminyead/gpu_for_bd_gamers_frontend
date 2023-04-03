@@ -305,4 +305,5 @@ def upon_budget_input(
 recommend_btn = st.button(label="Recommend Me")
 
 if budget_input or recommend_btn:
-    upon_budget_input()
+    with st.spinner("###### Generating....."):
+        upon_budget_input()
