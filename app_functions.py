@@ -19,7 +19,7 @@ def get_best_card_df(
         price_per_tier_query (str): The price_per_tier column
         db_conn (psycopg2.extensions.connection): The database connection
         budget_multiplier_pct (int, optional): Query will get GPU's whose price is this much percentage higher. Defaults to 20
-        
+
         which_query (str, optional): 
         Defaults to "current".
         "current": for recommended gpu
@@ -39,3 +39,11 @@ def get_best_card_df(
     query_price = which_query_dict[which_query]
     query_best_card_df = pd.read_sql(sql = query_price, con = db_conn)
     return query_best_card_df
+
+
+
+
+def get_best_cards_all(gpu_unit:str,db_conn:psycopg2.extensions.connection):
+    query_all_cards = f"SELECT * FROM lowest_prices_tiered WHERE gpu_unit_name = '{gpu_unit}'"
+    df_all_cards = pd.read_sql(sql=query_all_cards,con=db_conn)
+    return df_all_cards

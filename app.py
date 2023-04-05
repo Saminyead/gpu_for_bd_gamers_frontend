@@ -86,15 +86,6 @@ def too_low_gtx_1050_ti():
 
 
 
-# all recommended gpus
-def get_best_cards_all(gpu_unit:str):
-    query_all_cards = f"SELECT * FROM lowest_prices_tiered WHERE gpu_unit_name = '{gpu_unit}'"
-    df_all_cards = pd.read_sql(sql=query_all_cards,con=conn)
-    return df_all_cards
-
-
-
-
 # comment_table will be necessary to display the positive and negative attributes of the GPU later
 def get_comment_table(query=f"SELECT * FROM comment_table",connection=conn):
     return pd.read_sql(sql=query,con=connection)
@@ -226,7 +217,7 @@ def upon_budget_input(
         # writing recommended GPU
         recommended_gpu_unit_name = recommended_best_card_df.gpu_unit_name[0]
         recommended_gpu_df_price = recommended_best_card_df.gpu_price[0]
-        recommended_gpu_df = get_best_cards_all(recommended_gpu_unit_name)
+        recommended_gpu_df = get_best_cards_all(recommended_gpu_unit_name,db_conn=conn)
         recommended_gpu_tier_score = recommended_gpu_df.iloc[0][tier_score_for_upon_budget_input]
         recommended_gpu_price_per_tier = recommended_gpu_df.iloc[0][price_per_tier_for_upon_budget_input]
 
@@ -268,14 +259,14 @@ def upon_budget_input(
         # for recommending better value GPU 1 price tier below
         if len(df_1_lower) != 0:
             if price_per_tier_1_lower < recommended_gpu_price_per_tier and tier_diff_pct_1_lower < 10:
-                df_1_lower_all = get_best_cards_all(df_1_lower_gpu_unit)
+                df_1_lower_all = get_best_cards_all(df_1_lower_gpu_unit,db_conn=conn)
                 recommend_col_func(col = col_1_lower,title = "1_lower",gpu_df=df_1_lower_all,compare_df=recommended_gpu_df,col_btn_id='1_lower')
         
 
         # for recommending better value GPU 1 price tier higher
         if len(df_1_higher) != 0:
             if price_per_tier_1_higher < recommended_gpu_price_per_tier:
-                df_1_higher_all = get_best_cards_all(df_1_higher_gpu_unit)
+                df_1_higher_all = get_best_cards_all(df_1_higher_gpu_unit,db_conn=conn)
                 recommend_col_func(
                     col = col_1_higher,
                     title = "1_higher",
