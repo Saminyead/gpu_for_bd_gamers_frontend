@@ -9,4 +9,4 @@ all_available_gpu = pd.read_sql(
     con=st.session_state.db_connection
 )
 
-st.write(all_available_gpu)
+st.selectbox(label="# Select a Graphics Card",options=all_available_gpu)
