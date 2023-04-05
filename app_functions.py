@@ -158,9 +158,9 @@ def recommend_col(
 
     col.write(f"##### Performance Score: ")  
     if tier_score_for_recommend_col == 'all':
-        col.write(f"Base Tier Score: {gpu_df.iloc[0].base_tier_score:.2f}")
-        col.write(f"Net Tier Score: {gpu_df.iloc[0].net_tier_score:.2f}")
-        col.write(f"Non-RT Tier Score: {gpu_df.iloc[0].non_rt_net_score:.2f}")
+        col.write(f"<i><u>Base Tier Score</i></u>: {gpu_df.iloc[0].base_tier_score:.2f}",unsafe_allow_html=True)
+        col.write(f"<i><u>Net Tier Score</i></u>: {gpu_df.iloc[0].net_tier_score:.2f}",unsafe_allow_html=True)
+        col.write(f"<i><u>Non-RT Tier Score</i></u>: {gpu_df.iloc[0].non_rt_net_score:.2f}",unsafe_allow_html=True)
     else:
         col.write(f"{gpu_df.iloc[0][tier_score_for_recommend_col]:.2f}")
 
