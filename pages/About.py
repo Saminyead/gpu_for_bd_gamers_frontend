@@ -15,10 +15,10 @@ st.header("How It Works")
 st.write(
     """ 
     Data is collected across the websites of 9 of the largest computer hardware retailers of Bangladesh, and stored on to a database. When you 
-    enter your budget, the app checks for the graphics card with the highest performance score, and present it to you. To choose which performance
-    score, select the options "Yes" or "No" under the selection option "According to you, is Ray Tracing worth paying more for?". If you choose "No",
-    then choose whether you want to consider both positive and negative traits of GPU, or if you are interested in the raw performance only. You can 
-    find more details about performance scores [here](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md). 
+    enter your budget, the app checks for the graphics card with the highest performance score, and present it to you. The data is collected once
+    daily, and so is near-real-time. To choose which performance score, select the options "Yes" or "No" under the selection option "According to 
+    you, is Ray Tracing worth paying more for?". If you choose "No", then choose whether you want to consider both positive and negative traits of 
+    GPU, or if you are interested in the raw performance only. You can find more details about performance scores [here](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md). 
     Also, if you simply want to know all the information about a particular GPU in the market, then check the "All GPU Information" page.
     """
 )
