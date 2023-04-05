@@ -18,6 +18,10 @@ def init_connection():
 
 conn = init_connection()
 
+# for use in other pages
+if 'db_connection' not in st.session_state:
+    st.session_state['db_connection'] = conn
+
 
 # title and short descriptio of the app
 st.title(':Blue[Buy the Best Graphics Card for Your Budget]')
