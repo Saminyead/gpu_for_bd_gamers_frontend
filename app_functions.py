@@ -70,3 +70,20 @@ def get_comment_table(connection:psycopg2.extensions.connection,query:str=f"SELE
         pd.DataFrame: dataframe containing the comment_table
     """
     return pd.read_sql(sql=query,con=connection)
+
+
+
+
+def get_all_aib_cards_df(gpu:str,connection:psycopg2.extensions.connection):
+    """gets all the cards of a particular gpu_unit_name
+
+    Args:
+        gpu (str): The gpu_unit_name according to which all GPU's will be fetched from the database
+        connection (psycopg2.extensions.connection): database connection
+
+    Returns:
+        pd.DataFrame: DataFrame containing all AIB cards
+    """
+    query_aib_cards = f"SELECT * FROM gpu_of_interest WHERE gpu_unit_name = '{gpu}' ORDER BY gpu_price ASC"
+    df_all_aib_cards = pd.read_sql(sql=query_aib_cards,con=connection)
+    return df_all_aib_cards

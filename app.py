@@ -86,10 +86,7 @@ def too_low_gtx_1050_ti():
 
 
 
-def get_all_aib_cards_df(gpu:str,connection=conn):
-    query_aib_cards = f"SELECT * FROM gpu_of_interest WHERE gpu_unit_name = '{gpu}' ORDER BY gpu_price ASC"
-    df_all_aib_cards = pd.read_sql(sql=query_aib_cards,con=connection)
-    return df_all_aib_cards
+
 
 
 
@@ -183,7 +180,7 @@ def recommend_col(
     show_all_aib_cards_btn = col.checkbox(label='*Show More Models*',key=col_btn_id)
     if show_all_aib_cards_btn:
         col.write("##### Other Available Models:")
-        for index,row in get_all_aib_cards_df(gpu_df.gpu_unit_name.iloc[0]).iterrows():
+        for index,row in get_all_aib_cards_df(gpu_df.gpu_unit_name.iloc[0],conn).iterrows():
             col_gpu_name_aib,col_retailer_aib,col_aib_price = col.columns(3)
             col_gpu_name_aib.write(f"{row.gpu_name}")
             col_retailer_aib.write(f"[{row.retailer_name}]({row.retail_url})")
