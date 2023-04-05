@@ -3,6 +3,8 @@ import psycopg2
 import pandas as pd
 import time
 
+from app_functions import *
+
 
 # for wide configuration, looks better this way
 st.set_page_config(
@@ -69,45 +71,6 @@ budget_input = st.number_input(
     min_value = 0,
     step = 1000
 )
-
-
-
-
-# recommend a GPU
-def get_best_card_df(
-    budget:int = budget_input, 
-    which_query:str = "current",
-    tier_score_query:str = tier_score_col,
-    price_per_tier_query:str = price_per_tier_score,
-    budget_multiplier_pct:int = 15):
-    """Gets which card is recommended, 1 price tier lower, or higher
-
-    Args:
-        budget (int, optional): The budget according which the recommended, 1 price tier lower, or 1 price tier higher is to be found. Defaults to budget_input.
-
-        which_query (str, optional): 
-        Defaults to "current".
-        "current": for recommended gpu
-        "lower": for 1 price tier lower
-        "higher": for higher price tiers
-
-        tier_score_query(str,optional): tier_score_col from the dropdowns. Because using global variables in functions are apparently bad. Defaults to tier_score_col
-        price_per_tier_query(str,optional): price_per_tier_score from the dropdowns. Because using global variables in functions are apparently bad. Defaults to price_per_tier_score
-        budget_multiplier_pct (int, optional): Query will get GPU's whose price is this much percentage higher. Defaults to 15
-
-    Returns:
-        dataframe: Dataframe containing a single gpu according to our budget and which recommendation (recommendation, lower or higher)
-    """
-    budget_multiplier = (budget_multiplier_pct + 100) / 100
-    which_query_dict = {
-        "current" : f"SELECT * FROM lowest_prices_tiered WHERE gpu_price <= {budget} ORDER BY {tier_score_query} DESC LIMIT 1",
-        "lower" : f"SELECT * FROM lowest_prices_tiered WHERE gpu_price < {budget} ORDER BY {tier_score_query} DESC LIMIT 1",
-        "higher" : f"SELECT * FROM lowest_prices_tiered WHERE gpu_price > {budget} AND gpu_price < {budget_multiplier * budget} ORDER BY {price_per_tier_query} ASC LIMIT 1",
-    }
-    query_price = which_query_dict[which_query]
-    query_best_card_df = pd.read_sql(sql = query_price, con = conn)
-    return query_best_card_df
-
 
 
 
@@ -251,19 +214,30 @@ def upon_budget_input(
     price_per_tier_for_upon_budget_input:str = price_per_tier_score,
     recommend_col_func:callable = recommend_col
 ):
-    get_best_card_df()
-    if len(get_best_card_df()) == 0:
+    recommended_best_card_df = get_best_card_df(
+        budget=budget_input,
+        tier_score_query=tier_score_col,
+        price_per_tier_query=price_per_tier_score,
+        db_conn=conn
+        )
+    if len(recommended_best_card_df) == 0:
         too_low_gtx_1050_ti()
     else:
         # writing recommended GPU
-        recommended_gpu_unit_name = get_best_card_df().gpu_unit_name[0]
-        recommended_gpu_df_price = get_best_card_df().gpu_price[0]
+        recommended_gpu_unit_name = recommended_best_card_df.gpu_unit_name[0]
+        recommended_gpu_df_price = recommended_best_card_df.gpu_price[0]
         recommended_gpu_df = get_best_cards_all(recommended_gpu_unit_name)
         recommended_gpu_tier_score = recommended_gpu_df.iloc[0][tier_score_for_upon_budget_input]
         recommended_gpu_price_per_tier = recommended_gpu_df.iloc[0][price_per_tier_for_upon_budget_input]
 
         # finding out GPU 1 price tier lower
-        df_1_lower = get_best_card_df(budget=recommended_gpu_df_price,which_query="lower")
+        df_1_lower = get_best_card_df(
+            budget=recommended_gpu_df_price,
+            which_query="lower",
+            tier_score_query=tier_score_col,
+            price_per_tier_query=price_per_tier_score,
+            db_conn=conn
+            )
         # for the GTX 1050 Ti, df_1_lower becomes an empty dataframe
         if len(df_1_lower) != 0:
             df_1_lower_gpu_unit = df_1_lower.gpu_unit_name[0]
@@ -273,7 +247,12 @@ def upon_budget_input(
             tier_diff_pct_1_lower = tier_diff_1_lower / recommended_gpu_tier_score * 100
 
         # finding out GPU 1 price tier higher
-        df_1_higher = get_best_card_df(budget= budget_input,which_query="higher",budget_multiplier_pct=20)
+        df_1_higher = get_best_card_df(
+            budget= budget_input,
+            which_query="higher",
+            tier_score_query=tier_score_col,
+            price_per_tier_query=price_per_tier_score,
+            db_conn=conn)
         # expecting something similar to the df_1_lower happening
         if len(df_1_higher) != 0:
             df_1_higher_gpu_unit = df_1_higher.gpu_unit_name[0]
