@@ -25,6 +25,7 @@ def get_best_card_df(
         "current": for recommended gpu
         "lower": for 1 price tier lower
         "higher": for higher price tiers
+        "" is also an option
 
     Returns:
         dataframe: Dataframe containing a single gpu according to our budget and which recommendation (recommendation, lower or higher)
