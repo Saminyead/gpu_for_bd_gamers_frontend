@@ -86,11 +86,6 @@ def too_low_gtx_1050_ti():
 
 
 
-
-
-
-
-
 # function for showing the columns
 def recommend_col(
     col,
