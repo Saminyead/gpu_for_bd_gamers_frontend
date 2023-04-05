@@ -189,7 +189,7 @@ def recommend_col(
             n_desc = comment_table.loc[comment_table.comment_code==n_code]['comment_desc'].iloc[0]
             col.write(f":heavy_exclamation_mark: {n_desc}")
     
-    show_all_aib_cards_btn = col.checkbox(label='*Show More Models*',key=col_btn_id)
+    show_all_aib_cards_btn = col.checkbox(label='***Show More Models***',key=col_btn_id)
     if show_all_aib_cards_btn:
         col.write("##### Other Available Models:")
         for index,row in get_all_aib_cards_df(gpu_df.gpu_unit_name.iloc[0],db_conn).iterrows():
