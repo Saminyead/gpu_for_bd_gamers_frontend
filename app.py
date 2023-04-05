@@ -86,13 +86,6 @@ def too_low_gtx_1050_ti():
 
 
 
-# comment_table will be necessary to display the positive and negative attributes of the GPU later
-def get_comment_table(query=f"SELECT * FROM comment_table",connection=conn):
-    return pd.read_sql(sql=query,con=connection)
-
-
-
-
 def get_all_aib_cards_df(gpu:str,connection=conn):
     query_aib_cards = f"SELECT * FROM gpu_of_interest WHERE gpu_unit_name = '{gpu}' ORDER BY gpu_price ASC"
     df_all_aib_cards = pd.read_sql(sql=query_aib_cards,con=connection)
@@ -175,7 +168,7 @@ def recommend_col(
     comment_code_gpu_df = pd.read_sql(sql=tier_score_query,con=conn)
 
     # for displaying the positive and negative traits/features of the GPU
-    comment_table = get_comment_table()
+    comment_table = get_comment_table(connection=conn)
     positive_codes = comment_code_gpu_df['positive_comment_code'].loc[comment_code_gpu_df.gpu_unit_name==gpu_df.gpu_unit_name[0]].iloc[0]
     if positive_codes:  # sometimes if there are positive_comment_code is empty, in which case it is None
         for code in positive_codes.split():

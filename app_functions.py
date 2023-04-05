@@ -47,3 +47,8 @@ def get_best_cards_all(gpu_unit:str,db_conn:psycopg2.extensions.connection):
     query_all_cards = f"SELECT * FROM lowest_prices_tiered WHERE gpu_unit_name = '{gpu_unit}'"
     df_all_cards = pd.read_sql(sql=query_all_cards,con=db_conn)
     return df_all_cards
+
+
+
+def get_comment_table(connection:psycopg2.extensions.connection,query=f"SELECT * FROM comment_table"):
+    return pd.read_sql(sql=query,con=connection)
