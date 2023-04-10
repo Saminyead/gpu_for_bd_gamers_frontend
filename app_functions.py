@@ -153,18 +153,18 @@ def recommend_col(
         for _ in range(6):
             col.write("")
     col.write(f"""
-    ##### Price of Lowest-price Model:   
+    ##### :money_with_wings: Price of Lowest-price Model:   
     \u09F3 {gpu_df.gpu_price[0]:,}""")
 
-    col.write(f"##### Performance Score: ")  
+    col.write(f"##### :chart_with_upwards_trend: Performance Score: ")  
     if tier_score_for_recommend_col == 'all':
-        col.write(f"<i><u>Base Tier Score</i></u>: {gpu_df.iloc[0].base_tier_score:.2f}",unsafe_allow_html=True)
-        col.write(f"<i><u>Net Tier Score</i></u>: {gpu_df.iloc[0].net_tier_score:.2f}",unsafe_allow_html=True)
-        col.write(f"<i><u>Non-RT Tier Score</i></u>: {gpu_df.iloc[0].non_rt_net_score:.2f}",unsafe_allow_html=True)
+        col.write(f"Base Tier Score: {gpu_df.iloc[0].base_tier_score:.2f}",unsafe_allow_html=True)
+        col.write(f"Net Tier Score: {gpu_df.iloc[0].net_tier_score:.2f}",unsafe_allow_html=True)
+        col.write(f"Non-RT Tier Score: {gpu_df.iloc[0].non_rt_net_score:.2f}",unsafe_allow_html=True)
     else:
         col.write(f"{gpu_df.iloc[0][tier_score_for_recommend_col]:.2f}")
 
-    col.write("##### Lowest-Price Models Available At:")
+    col.write("##### :shopping_trolley: Lowest-Price Models Available At:")
     for index, row in gpu_df.iterrows():
         col_retailer, col_gpu_name = col.columns(2)
         col_retailer.write(f"[{row.retailer_name}]({row.retail_url})")
