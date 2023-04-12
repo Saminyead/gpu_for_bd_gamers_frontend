@@ -2,7 +2,14 @@ import streamlit as st
 import pandas as pd
 import psycopg2
 
+@st.cache_resource(ttl=3600)
+def init_connection():
+    """Initializes database connection
 
+    Returns:
+        _type_: Psycopg2 database connection object
+    """
+    return psycopg2.connect(**st.secrets["postgres"])
 
 def get_best_card_df(
     budget:int,
