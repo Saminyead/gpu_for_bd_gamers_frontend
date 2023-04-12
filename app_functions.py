@@ -83,7 +83,13 @@ def get_all_aib_cards_df(gpu:str,connection:psycopg2.extensions.connection):
     Returns:
         pd.DataFrame: DataFrame containing all AIB cards
     """
-    query_aib_cards = f"SELECT * FROM gpu_of_interest WHERE gpu_unit_name = '{gpu}' ORDER BY gpu_price ASC"
+    # getting the latest date
+    dates = pd.read_sql(
+    sql="SELECT DISTINCT data_collection_date FROM gpu_of_interest",
+    con=connection
+    )
+    dates_descending = dates.sort_values(by='data_collection_date',ascending=False)
+    query_aib_cards = f"SELECT * FROM gpu_of_interest WHERE gpu_unit_name = '{gpu}' AND data_collection_date = '{dates_descending.data_collection_date.iloc[0]}' ORDER BY gpu_price ASC"
     df_all_aib_cards = pd.read_sql(sql=query_aib_cards,con=connection)
     return df_all_aib_cards
 
