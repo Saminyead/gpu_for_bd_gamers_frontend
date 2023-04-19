@@ -71,11 +71,16 @@ budget_input = st.number_input(
 
 # if budget too low
 def too_low_gtx_1050_ti():
-    query_gtx_1050_ti = f"SELECT * FROM lowest_prices_tiered WHERE gpu_unit_name = 'Geforce GTX 1050 Ti'"
-    df_gtx_1050_ti = pd.read_sql(sql=query_gtx_1050_ti,con=conn)
-    price_gtx_1050_ti = df_gtx_1050_ti.gpu_price[0]
+    query_gtx_1050_ti = f"SELECT * FROM lowest_prices_tiered ORDER BY gpu_price ASC LIMIT 1"
+    lowest_price_gpu_query_output = pd.read_sql(sql=query_gtx_1050_ti,con=conn)
+    price_lowest_price_gpu = lowest_price_gpu_query_output.gpu_price[0]
+    lowest_price_gpu_df = pd.read_sql(
+        sql=f"SELECT * FROM lowest_prices_tiered WHERE gpu_price = {price_lowest_price_gpu}",
+        con=conn
+    )
+    lowest_price_gpu = lowest_price_gpu_df.gpu_unit_name.iloc[0]
     return st.write(
-        f"No good GPU's to recommend for this budget. Consider increasing your budget to BDT. {price_gtx_1050_ti:,} to get the GTX 1050 Ti"
+        f"No good GPU's to recommend for this budget. Consider increasing your budget to BDT. {price_lowest_price_gpu:,} to get the {lowest_price_gpu}"
         ) # the price is written like this to show thousand separator
 
 
