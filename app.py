@@ -8,7 +8,7 @@ from app_functions import *
 
 # for wide configuration, looks better this way
 st.set_page_config(
-    page_title="BD Gamers' GPU for Budget",
+    page_title="GPU Prices in Bangladesh",
     layout="wide")
 
 
