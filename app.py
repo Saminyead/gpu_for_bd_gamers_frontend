@@ -1,5 +1,4 @@
 import streamlit as st
-import psycopg2
 import pandas as pd
 import time
 
@@ -21,7 +20,7 @@ if 'db_connection' not in st.session_state:
 
 
 # title and short descriptio of the app
-st.title(':Blue[Buy the Best Graphics Card for Your Budget]')
+st.title('Buy the Best Graphics Card for Your Budget')
 st.caption('For Bangladeshi Gamers. Based on Live Data of the Bangladeshi GPU Market')
 
 

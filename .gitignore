@@ -1,3 +1,4 @@
 .streamlit/secrets.toml
 button_test.py
 __pycache__
+.venv/
