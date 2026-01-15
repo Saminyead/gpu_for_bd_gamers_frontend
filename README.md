@@ -9,7 +9,7 @@ a higher performance-price ratio; as well as for a GPU that costs a little highe
 giving them a higher performance-price ratio as well. These graphics card along with their relevant information are then shown to the end-user. End users can also find 
 information on any graphics card available in the market from the 'All GPU Information' page of the application.
 
-The data in the database is collected on a daily basis from the websites of 9 of the largest computer hardware retailers (to see which, see below) of Bangladesh.
+The data in the database is collected on a daily basis from the websites of 9 of the largest computer hardware retailers (to see which, [see below](#list-of-hardware-retailers-for-data-collection)) of Bangladesh.
 The graphics cards are then given some performance scores. How these performance scores are calculated can be found [here](https://github.com/Saminyead/gpu_for_bd_gamers/blob/master/docs/tier_score_simplified.md).
 To know more about how the back-end processes of this app works, see this [repository](https://github.com/Saminyead/gpu_for_bd_gamers).
 
